@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.github.zhangchunsheng;
+package com.github.zhangchunsheng.flink;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
