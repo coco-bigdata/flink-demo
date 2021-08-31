@@ -7,6 +7,7 @@ import com.github.zhangchunsheng.flink.sink.SinkToMySQL;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
@@ -79,6 +80,24 @@ public class TestMysqlSinkJob {
             }
         });
         keyBy.print();
+
+        SingleOutputStreamOperator<Student> reduce = student.keyBy(new KeySelector<Student, Integer>() {
+            @Override
+            public Integer getKey(Student value) throws Exception {
+                return value.age;
+            }
+        }).reduce(new ReduceFunction<Student>() {
+            @Override
+            public Student reduce(Student value1, Student value2) throws Exception {
+                Student student1 = new Student();
+                student1.name = value1.name + value2.name;
+                student1.studentId = (value1.studentId + value2.studentId) / 2;
+                student1.password = value1.password + value2.password;
+                student1.age = (value1.age + value2.age) / 2;
+                return student1;
+            }
+        });
+        reduce.print();
 
         env.execute("Flink add sink");
     }
