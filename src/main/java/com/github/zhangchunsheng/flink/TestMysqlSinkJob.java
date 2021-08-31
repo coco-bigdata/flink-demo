@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.zhangchunsheng.flink.model.Student;
 import com.github.zhangchunsheng.flink.sink.PrintSinkFunction;
 import com.github.zhangchunsheng.flink.sink.SinkToMySQL;
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -57,6 +58,17 @@ public class TestMysqlSinkJob {
             }
         });
         flatMap.print();
+
+        SingleOutputStreamOperator<Student> filter = student.filter(new FilterFunction<Student>() {
+            @Override
+            public boolean filter(Student value) throws Exception {
+                if (value.studentId > 95) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        filter.print();
 
         env.execute("Flink add sink");
     }
