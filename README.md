@@ -24,4 +24,12 @@ Sink
 
 ```
 Kafka、ElasticSearch、Socket、RabbitMQ、JDBC、Cassandra POJO、File、Print
+接收器，Flink 将转换计算后的数据发送的地点 ，你可能需要存储下来
+Flink 常见的 Sink 大概有如下几类：
+写入文件
+打印出来
+写入 socket
+自定义的 sink
+自定义的 sink 常见的有 Apache kafka、RabbitMQ、MySQL、ElasticSearch
+Apache Cassandra、Hadoop FileSystem 等，同理你也可以定义自己的 Sink
 ```
