@@ -1,6 +1,18 @@
 # flink-demo
 flink-demo
 
+Source
+```
+数据源，Flink 在流处理和批处理上的 source 大概有 4 类：
+基于本地集合的 source
+基于文件的 source
+基于网络套接字的 source
+自定义的 source
+自定义的 source 常见的有 Apache kafka、Amazon Kinesis Streams、
+RabbitMQ、Twitter Streaming API、Apache NiFi 等，当然你也可以定义自己的 source
+```
+
+
 Sink
 
 ```
