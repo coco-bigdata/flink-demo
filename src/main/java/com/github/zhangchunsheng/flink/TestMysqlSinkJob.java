@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.github.zhangchunsheng.flink.model.Student;
 import com.github.zhangchunsheng.flink.sink.PrintSinkFunction;
 import com.github.zhangchunsheng.flink.sink.SinkToMySQL;
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
+import org.apache.flink.util.Collector;
 
 import java.util.Properties;
 
@@ -45,6 +47,16 @@ public class TestMysqlSinkJob {
             }
         });
         map.print();
+
+        SingleOutputStreamOperator<Student> flatMap = student.flatMap(new FlatMapFunction<Student, Student>() {
+            @Override
+            public void flatMap(Student value, Collector<Student> out) throws Exception {
+                if (value.studentId % 2 == 0) {
+                    out.collect(value);
+                }
+            }
+        });
+        flatMap.print();
 
         env.execute("Flink add sink");
     }
