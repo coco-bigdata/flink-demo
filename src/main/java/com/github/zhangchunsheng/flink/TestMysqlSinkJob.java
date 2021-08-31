@@ -120,6 +120,13 @@ public class TestMysqlSinkJob {
 
         // inputStream.keyBy(0).windowAll(Time.seconds(10));
 
+        // inputStream.union(inputStream1, inputStream2, ...);
+
+        /*inputStream.join(inputStream1)
+                .where(0).equalTo(1)
+                .window(Time.seconds(5))
+                .apply (new JoinFunction () {...});*/
+
         env.execute("Flink add sink");
     }
 }
