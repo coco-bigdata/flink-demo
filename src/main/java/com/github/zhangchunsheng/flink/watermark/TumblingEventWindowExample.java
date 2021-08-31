@@ -10,6 +10,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09;
 import org.apache.flink.util.OutputTag;
 
 public class TumblingEventWindowExample {
@@ -78,6 +79,19 @@ public class TumblingEventWindowExample {
                 });
         resultStream.print();
         env.execute();
+
+        /*env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+
+        // 其他
+        // env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
+        // env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+
+        DataStream<MyEvent> stream = env.addSource(new FlinkKafkaConsumer09<MyEvent>(topic, schema, props));
+
+        stream.keyBy( (event) -> event.getUser() )
+            .timeWindow(Time.hours(1))
+            .reduce( (a, b) -> a.add(b) )
+            .addSink();*/
     }
 
     public static void main2(String[] args) throws Exception {
