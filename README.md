@@ -37,6 +37,9 @@ Apache Cassandra、Hadoop FileSystem 等，同理你也可以定义自己的 Sin
 
 Time Windows
 
-```yaml
+```
 Apache Flink 具有三个不同的时间概念，即 processing time, event time 和 ingestion time
+Processing Time 是指事件被处理时机器的系统时间
+Event Time 是事件发生的时间，一般就是数据本身携带的时间
+Ingestion Time 是事件进入 Flink 的时间
 ```
