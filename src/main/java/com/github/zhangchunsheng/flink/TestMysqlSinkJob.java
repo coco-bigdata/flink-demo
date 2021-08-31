@@ -8,6 +8,8 @@ import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
@@ -150,6 +152,9 @@ public class TestMysqlSinkJob {
         DataStream<Integer> even = split.select("even");
         DataStream<Integer> odd = split.select("odd");
         DataStream<Integer> all = split.select("even", "odd");*/
+
+        /*DataStream<Tuple4<Integer, Double, String, String>> in = ;// [...]
+        DataStream<Tuple2<String, String>> out = in.project(3, 2);*/
 
         env.execute("Flink add sink");
     }
