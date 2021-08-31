@@ -2,7 +2,9 @@ package com.github.zhangchunsheng.flink;
 
 import com.alibaba.fastjson.JSON;
 import com.github.zhangchunsheng.flink.model.Student;
+import com.github.zhangchunsheng.flink.sink.PrintSinkFunction;
 import com.github.zhangchunsheng.flink.sink.SinkToMySQL;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -29,6 +31,20 @@ public class TestMysqlSinkJob {
                 .map(string -> JSON.parseObject(string, Student.class)); //Fastjson 解析字符串成 student 对象
 
         student.addSink(new SinkToMySQL()); //数据 sink 到 mysql
+        // student.addSink(new PrintSinkFunction<>());
+
+        SingleOutputStreamOperator<Student> map = student.map(new MapFunction<Student, Student>() {
+            @Override
+            public Student map(Student value) throws Exception {
+                Student s1 = new Student();
+                s1.studentId = value.studentId;
+                s1.name = value.name;
+                s1.password = value.password;
+                s1.age = value.age + 5;
+                return s1;
+            }
+        });
+        map.print();
 
         env.execute("Flink add sink");
     }
