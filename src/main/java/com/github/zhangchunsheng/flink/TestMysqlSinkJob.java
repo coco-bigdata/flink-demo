@@ -8,12 +8,16 @@ import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.datastream.SplitStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.util.Collector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class TestMysqlSinkJob {
@@ -126,6 +130,20 @@ public class TestMysqlSinkJob {
                 .where(0).equalTo(1)
                 .window(Time.seconds(5))
                 .apply (new JoinFunction () {...});*/
+
+        /*SplitStream<Integer> split = inputStream.split(new OutputSelector<Integer>() {
+            @Override
+            public Iterable<String> select(Integer value) {
+                List<String> output = new ArrayList<String>();
+                if (value % 2 == 0) {
+                    output.add("even");
+                }
+                else {
+                    output.add("odd");
+                }
+                return output;
+            }
+        });*/
 
         env.execute("Flink add sink");
     }
