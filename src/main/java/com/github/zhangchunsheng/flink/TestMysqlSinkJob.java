@@ -8,6 +8,8 @@ import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
@@ -69,6 +71,14 @@ public class TestMysqlSinkJob {
             }
         });
         filter.print();
+
+        KeyedStream<Student, Integer> keyBy = student.keyBy(new KeySelector<Student, Integer>() {
+            @Override
+            public Integer getKey(Student value) throws Exception {
+                return value.age;
+            }
+        });
+        keyBy.print();
 
         env.execute("Flink add sink");
     }
