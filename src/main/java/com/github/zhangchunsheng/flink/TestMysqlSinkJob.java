@@ -6,6 +6,7 @@ import com.github.zhangchunsheng.flink.sink.PrintSinkFunction;
 import com.github.zhangchunsheng.flink.sink.SinkToMySQL;
 import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -114,6 +115,8 @@ public class TestMysqlSinkJob {
         KeyedStream.maxBy(0)
         KeyedStream.maxBy("key")
         */
+
+        // inputStream.keyBy(0).window(Time.seconds(10));
 
         env.execute("Flink add sink");
     }
