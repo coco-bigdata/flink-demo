@@ -155,6 +155,10 @@ public class TestSinkJob {
         /*DataStream<Tuple4<Integer, Double, String, String>> in = ;// [...]
         DataStream<Tuple2<String, String>> out = in.project(3, 2);*/
 
+        /*data.keyBy(1)
+                .timeWindow(Time.minutes(1)) //tumbling time window 每分钟统计一次数量和
+                .sum(1);*/
+
         env.execute("Flink add sink");
     }
 }
