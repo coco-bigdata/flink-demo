@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.zhangchunsheng.flink.model.Student;
 import com.github.zhangchunsheng.flink.sink.PrintSinkFunction;
 import com.github.zhangchunsheng.flink.sink.SinkToMySQL;
-import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
@@ -98,6 +95,25 @@ public class TestMysqlSinkJob {
             }
         });
         reduce.print();
+
+        /*KeyedStream.fold("1", new FoldFunction<Integer, String>() {
+            @Override
+            public String fold(String accumulator, Integer value) throws Exception {
+                return accumulator + "=" + value;
+            }
+        });
+
+        KeyedStream.sum(0)
+        KeyedStream.sum("key")
+        KeyedStream.min(0)
+        KeyedStream.min("key")
+        KeyedStream.max(0)
+        KeyedStream.max("key")
+        KeyedStream.minBy(0)
+        KeyedStream.minBy("key")
+        KeyedStream.maxBy(0)
+        KeyedStream.maxBy("key")
+        */
 
         env.execute("Flink add sink");
     }
