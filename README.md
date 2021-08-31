@@ -17,7 +17,8 @@ Transformation
 
 ```
 数据转换的各种操作，有 Map / FlatMap / Filter / KeyBy / Reduce / Fold / Aggregations /
-Window / WindowAll / Union / Window join / Split / Select / Project 等，操作很多，可以将数据转换计算成你想要的数据
+Window / WindowAll / Union / Window join / Split / Select / Project 等
+可以将数据转换计算成你想要的数据
 ```
 
 Sink
