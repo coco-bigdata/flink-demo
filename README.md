@@ -34,3 +34,9 @@ Flink 常见的 Sink 大概有如下几类：
 自定义的 sink 常见的有 Apache kafka、RabbitMQ、MySQL、ElasticSearch
 Apache Cassandra、Hadoop FileSystem 等，同理你也可以定义自己的 Sink
 ```
+
+Time Windows
+
+```yaml
+Apache Flink 具有三个不同的时间概念，即 processing time, event time 和 ingestion time
+```

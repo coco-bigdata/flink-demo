@@ -159,6 +159,10 @@ public class TestSinkJob {
                 .timeWindow(Time.minutes(1)) //tumbling time window 每分钟统计一次数量和
                 .sum(1);*/
 
+        /*data.keyBy(1)
+                .timeWindow(Time.minutes(1), Time.seconds(30)) //sliding time window 每隔 30s 统计过去一分钟的数量和
+                .sum(1);*/
+
         env.execute("Flink add sink");
     }
 }
