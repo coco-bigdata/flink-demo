@@ -118,6 +118,8 @@ public class TestMysqlSinkJob {
 
         // inputStream.keyBy(0).window(Time.seconds(10));
 
+        // inputStream.keyBy(0).windowAll(Time.seconds(10));
+
         env.execute("Flink add sink");
     }
 }
