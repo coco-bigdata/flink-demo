@@ -12,4 +12,4 @@
 
 2021-09-01
 1. add elk demo
-2. add rabbitmq demo
+2. add rabbitmq source demo
