@@ -104,4 +104,5 @@ input.addSink(new ElasticsearchSink<>(
 }));
 
 bin/kafka-topics.sh --list --zookeeper localhost:2181
+bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic metric-test
 ```
