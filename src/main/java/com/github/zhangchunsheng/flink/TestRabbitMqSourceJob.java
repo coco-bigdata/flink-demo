@@ -56,6 +56,15 @@ public class TestRabbitMqSourceJob {
         // 传递类型名称
         /*lines.filter(new FilterGenre("Action"))
                 .print();*/
+
+        /*final String genre = "Action";
+
+        lines.filter((FilterFunction<Tuple3<Long, String, String>>) movie -> {
+            String[] genres = movie.f2.split("\\|");
+
+            //使用变量
+            return Stream.of(genres).anyMatch(g -> g.equals(genre));
+        }).print();*/
     }
 
     class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
