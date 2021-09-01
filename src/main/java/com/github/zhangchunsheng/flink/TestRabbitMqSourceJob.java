@@ -2,10 +2,12 @@ package com.github.zhangchunsheng.flink;
 
 import com.github.zhangchunsheng.flink.utils.ExecutionEnvUtil;
 import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.RichFilterFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
@@ -65,6 +67,15 @@ public class TestRabbitMqSourceJob {
             //使用变量
             return Stream.of(genres).anyMatch(g -> g.equals(genre));
         }).print();*/
+
+        // Configuration 类来存储参数
+        /*Configuration configuration = new Configuration();
+        configuration.setString("genre", "Action");
+
+        lines.filter(new FilterGenreWithParameters())
+                // 将参数传递给函数
+                .withParameters(configuration)
+                .print();*/
     }
 
     class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
@@ -73,6 +84,24 @@ public class TestRabbitMqSourceJob {
         //初始化构造方法
         public FilterGenre(String genre) {
             this.genre = genre;
+        }
+
+        @Override
+        public boolean filter(Tuple3<Long, String, String> movie) throws Exception {
+            String[] genres = movie.f2.split("\\|");
+
+            return Stream.of(genres).anyMatch(g -> g.equals(genre));
+        }
+    }
+
+    class FilterGenreWithParameters extends RichFilterFunction<Tuple3<Long, String, String>> {
+
+        String genre;
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            //读取配置
+            genre = parameters.getString("genre", "");
         }
 
         @Override
