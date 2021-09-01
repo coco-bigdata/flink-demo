@@ -57,3 +57,49 @@ data.keyBy(new xxxKey())
 
 // 算子设置并行度 > env 设置并行度 > 配置文件默认并行度
 ```
+
+```
+kafka.brokers=localhost:9092
+kafka.group.id=peter-metrics-group-test
+kafka.zookeeper.connect=localhost:2181
+metrics.topic=peter-metrics
+stream.parallelism=5
+stream.checkpoint.interval=1000
+stream.checkpoint.enable=false
+elasticsearch.hosts=localhost:9200
+elasticsearch.bulk.flush.max.actions=40
+stream.sink.parallelism=5
+
+1、bulk.flush.backoff.enable 用来表示是否开启重试机制
+2、bulk.flush.backoff.type 重试策略，有两种：EXPONENTIAL 指数型（表示多次重试之间的时间间隔按照指数方式进行增长）、CONSTANT 常数型（表示多次重试之间的时间间隔为固定常数）
+3、bulk.flush.backoff.delay 进行重试的时间间隔
+4、bulk.flush.backoff.retries 失败重试的次数
+5、bulk.flush.max.actions: 批量写入时的最大写入条数
+6、bulk.flush.max.size.mb: 批量写入时的最大数据量
+7、bulk.flush.interval.ms: 批量写入的时间间隔，配置后则会按照该时间间隔严格执行，无视上面的两个批量写入配置
+
+DataStream<String> input = ...;
+
+input.addSink(new ElasticsearchSink<>(
+    config, transportAddresses,
+    new ElasticsearchSinkFunction<String>() {...},
+    new ActionRequestFailureHandler() {
+        @Override
+        void onFailure(ActionRequest action,
+                Throwable failure,
+                int restStatusCode,
+                RequestIndexer indexer) throw Throwable {
+
+            if (ExceptionUtils.containsThrowable(failure, EsRejectedExecutionException.class)) {
+                // full queue; re-add document for indexing
+                indexer.add(action);
+            } else if (ExceptionUtils.containsThrowable(failure, ElasticsearchParseException.class)) {
+                // malformed document; simply drop request without failing sink
+            } else {
+                // for all other failures, fail the sink
+                // here the failure is simply rethrown, but users can also choose to throw custom exceptions
+                throw failure;
+            }
+        }
+}));
+```

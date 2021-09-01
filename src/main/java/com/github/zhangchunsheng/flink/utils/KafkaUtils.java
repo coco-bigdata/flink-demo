@@ -30,8 +30,8 @@ public class KafkaUtils {
         Map<String, String> tags = new HashMap<>();
         Map<String, Object> fields = new HashMap<>();
 
-        tags.put("cluster", "zhisheng");
-        tags.put("host_ip", "101.147.022.106");
+        tags.put("cluster", "peter");
+        tags.put("host_ip", "localhost");
 
         fields.put("used_percent", 90d);
         fields.put("max", 27244873d);
