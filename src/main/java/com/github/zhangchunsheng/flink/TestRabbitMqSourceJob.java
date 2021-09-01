@@ -140,7 +140,6 @@ public class TestRabbitMqSourceJob {
     }
 
     static class FilterGenreWithParameters extends RichFilterFunction<Tuple3<Long, String, String>> {
-
         String genre;
 
         @Override
@@ -158,7 +157,6 @@ public class TestRabbitMqSourceJob {
     }
 
     static class FilterGenreWithGlobalEnv extends RichFilterFunction<Tuple3<Long, String, String>> {
-
         @Override
         public boolean filter(Tuple3<Long, String, String> movie) throws Exception {
             String[] genres = movie.f2.split("\\|");
@@ -172,7 +170,6 @@ public class TestRabbitMqSourceJob {
     }
 
     static class MyClassifier extends RichMapFunction<String, Integer> {
-
         @Override
         public void open(Configuration config) {
             File machineLearningModel = getRuntimeContext().getDistributedCache().getFile("machineLearningModel");
