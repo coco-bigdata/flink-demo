@@ -135,6 +135,11 @@ under the License.
 			<artifactId>commons-dbcp2</artifactId>
 			<version>2.1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-rabbitmq_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
