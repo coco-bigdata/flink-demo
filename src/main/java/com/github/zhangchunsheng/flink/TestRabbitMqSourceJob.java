@@ -76,6 +76,9 @@ public class TestRabbitMqSourceJob {
                 // 将参数传递给函数
                 .withParameters(configuration)
                 .print();*/
+
+        //读取命令行参数
+        ParameterTool parameterTool1 = ParameterTool.fromArgs(args);
     }
 
     class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
