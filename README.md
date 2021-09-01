@@ -54,4 +54,6 @@ data.keyBy(new xxxKey())
     .flatMap(new XxxFlatMapFunction()).setParallelism(5)
     .map(new XxxMapFunction).setParallelism(5)
     .addSink(new XxxSink()).setParallelism(1)
+
+// 算子设置并行度 > env 设置并行度 > 配置文件默认并行度
 ```
