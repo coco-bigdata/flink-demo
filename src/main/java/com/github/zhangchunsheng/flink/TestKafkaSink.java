@@ -8,12 +8,19 @@ import com.github.zhangchunsheng.flink.utils.GsonUtil;
 import com.github.zhangchunsheng.flink.utils.KafkaConfigUtil;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.shaded.guava18.com.google.common.collect.Lists;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
+import org.apache.flink.util.Collector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class TestKafkaSink {
@@ -47,5 +54,16 @@ public class TestKafkaSink {
                 new SimpleStringSchema(),
                 props)).setParallelism(1)
                 .map(string -> GsonUtil.fromJson(string, Student.class)); //，解析字符串成 student 对象
+
+        student.timeWindowAll(Time.minutes(1)).apply(new AllWindowFunction<Student, List<Student>, TimeWindow>() {
+            @Override
+            public void apply(TimeWindow window, Iterable<Student> values, Collector<List<Student>> out) throws Exception {
+                ArrayList<Student> students = org.apache.flink.shaded.curator.org.apache.curator.shaded.com.google.common.collect.Lists.newArrayList(values);
+                if (students.size() > 0) {
+                    System.out.println("1 分钟内收集到 student 的数据条数是：" + students.size());
+                    out.collect(students);
+                }
+            }
+        });
     }
 }
