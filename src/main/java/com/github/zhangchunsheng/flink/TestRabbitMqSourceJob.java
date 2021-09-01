@@ -79,9 +79,14 @@ public class TestRabbitMqSourceJob {
 
         //读取命令行参数
         ParameterTool parameterTool1 = ParameterTool.fromArgs(args);
+        env.getConfig().setGlobalJobParameters(parameterTool1);
+
+        //该函数将能够读取这些全局参数
+        /*lines.filter(new FilterGenreWithGlobalEnv()) //这个函数是自己定义的
+                .print();*/
     }
 
-    class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
+    static class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
         //类型
         String genre;
         //初始化构造方法
@@ -97,7 +102,7 @@ public class TestRabbitMqSourceJob {
         }
     }
 
-    class FilterGenreWithParameters extends RichFilterFunction<Tuple3<Long, String, String>> {
+    static class FilterGenreWithParameters extends RichFilterFunction<Tuple3<Long, String, String>> {
 
         String genre;
 
@@ -110,6 +115,20 @@ public class TestRabbitMqSourceJob {
         @Override
         public boolean filter(Tuple3<Long, String, String> movie) throws Exception {
             String[] genres = movie.f2.split("\\|");
+
+            return Stream.of(genres).anyMatch(g -> g.equals(genre));
+        }
+    }
+
+    static class FilterGenreWithGlobalEnv extends RichFilterFunction<Tuple3<Long, String, String>> {
+
+        @Override
+        public boolean filter(Tuple3<Long, String, String> movie) throws Exception {
+            String[] genres = movie.f2.split("\\|");
+            //获取全局的配置
+            ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+            //读取配置
+            String genre = parameterTool.get("genre");
 
             return Stream.of(genres).anyMatch(g -> g.equals(genre));
         }
