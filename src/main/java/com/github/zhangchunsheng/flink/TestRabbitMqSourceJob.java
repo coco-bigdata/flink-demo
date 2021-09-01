@@ -3,8 +3,10 @@ package com.github.zhangchunsheng.flink;
 import com.github.zhangchunsheng.flink.utils.ExecutionEnvUtil;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.RichFilterFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
@@ -12,7 +14,9 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
+import org.apache.flink.util.Collector;
 
+import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
@@ -84,6 +88,32 @@ public class TestRabbitMqSourceJob {
         //该函数将能够读取这些全局参数
         /*lines.filter(new FilterGenreWithGlobalEnv()) //这个函数是自己定义的
                 .print();*/
+
+        /*DataSet<Integer> toBroadcast = env.fromElements(1, 2, 3);
+        // 获取要忽略的单词集合
+        DataSet<String> wordsToIgnore = ...
+
+        data.map(new RichFlatMapFunction<String, String>() {
+
+            // 存储要忽略的单词集合. 这将存储在 TaskManager 的内存中
+            Collection<String> wordsToIgnore;
+
+            @Override
+            public void open(Configuration parameters) throws Exception {
+                //读取要忽略的单词的集合
+                wordsToIgnore = getRuntimeContext().getBroadcastVariable("wordsToIgnore");
+            }
+
+            @Override
+            public String map(String line, Collector<String> out) throws Exception {
+                String[] words = line.split("\\W+");
+                for (String word : words)
+                    //使用要忽略的单词集合
+                    if (wordsToIgnore.contains(word))
+                        out.collect(new Tuple2<>(word, 1));
+            }
+            //通过广播变量传递数据集
+        }).withBroadcastSet(wordsToIgnore, "wordsToIgnore");*/
     }
 
     static class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
