@@ -4,6 +4,7 @@ import com.github.zhangchunsheng.flink.utils.ExecutionEnvUtil;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.RichFilterFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -16,6 +17,7 @@ import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
 import org.apache.flink.util.Collector;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -166,6 +168,19 @@ public class TestRabbitMqSourceJob {
             String genre = parameterTool.get("genre");
 
             return Stream.of(genres).anyMatch(g -> g.equals(genre));
+        }
+    }
+
+    static class MyClassifier extends RichMapFunction<String, Integer> {
+
+        @Override
+        public void open(Configuration config) {
+            File machineLearningModel = getRuntimeContext().getDistributedCache().getFile("machineLearningModel");
+        }
+
+        @Override
+        public Integer map(String value) throws Exception {
+            return 0;
         }
     }
 }
