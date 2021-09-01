@@ -52,5 +52,25 @@ public class TestRabbitMqSourceJob {
             // 查找所有 “动作” 类型的电影
             return Stream.of(genres).anyMatch(g -> g.equals("Action"));
         }).print();*/
+
+        // 传递类型名称
+        /*lines.filter(new FilterGenre("Action"))
+                .print();*/
+    }
+
+    class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
+        //类型
+        String genre;
+        //初始化构造方法
+        public FilterGenre(String genre) {
+            this.genre = genre;
+        }
+
+        @Override
+        public boolean filter(Tuple3<Long, String, String> movie) throws Exception {
+            String[] genres = movie.f2.split("\\|");
+
+            return Stream.of(genres).anyMatch(g -> g.equals(genre));
+        }
     }
 }
