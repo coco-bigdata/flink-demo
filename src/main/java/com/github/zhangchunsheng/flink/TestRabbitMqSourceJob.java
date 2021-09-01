@@ -114,6 +114,11 @@ public class TestRabbitMqSourceJob {
             }
             //通过广播变量传递数据集
         }).withBroadcastSet(wordsToIgnore, "wordsToIgnore");*/
+
+        //从 HDFS 注册文件
+        env.registerCachedFile("hdfs:///path/to/file", "machineLearningModel");
+
+        env.execute();
     }
 
     static class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
