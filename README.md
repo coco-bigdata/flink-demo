@@ -108,4 +108,7 @@ bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic metric-test
 
 
 docker run -d  -p 15672:15672  -p  5672:5672  -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin --name rabbitmq rabbitmq:3-management
+
+web.tmpdir: /usr/local/blink-1.5.1/jars
+web.upload.dir: /usr/local/blink-1.5.1/jars
 ```
