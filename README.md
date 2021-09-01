@@ -49,4 +49,9 @@ Ingestion Time 是事件进入 Flink 的时间
 
 StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 env.setParallelism(10);
+
+data.keyBy(new xxxKey())
+    .flatMap(new XxxFlatMapFunction()).setParallelism(5)
+    .map(new XxxMapFunction).setParallelism(5)
+    .addSink(new XxxSink()).setParallelism(1)
 ```
