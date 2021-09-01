@@ -43,3 +43,10 @@ Processing Time 是指事件被处理时机器的系统时间
 Event Time 是事件发生的时间，一般就是数据本身携带的时间
 Ingestion Time 是事件进入 Flink 的时间
 ```
+
+```
+./bin/flink run -p 10 ../word-count.jar
+
+StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+env.setParallelism(10);
+```
