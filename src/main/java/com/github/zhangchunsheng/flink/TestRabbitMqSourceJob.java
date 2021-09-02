@@ -1,6 +1,7 @@
 package com.github.zhangchunsheng.flink;
 
 import com.github.zhangchunsheng.flink.utils.ExecutionEnvUtil;
+import org.apache.flink.api.common.accumulators.IntCounter;
 import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.DataSet;
@@ -139,6 +140,36 @@ public class TestRabbitMqSourceJob {
         // 计算要处理的文本中的行数
         long linesCount = lines.count();
         System.out.println(linesCount);*/
+
+        /*lines.flatMap(new RichFlatMapFunction<String, Tuple2<String, Integer>>() {
+
+            //创建一个累加器
+            private IntCounter linesNum = new IntCounter();
+
+            @Override
+            public void open(Configuration parameters) throws Exception {
+                //注册一个累加器
+                getRuntimeContext().addAccumulator("linesNum", linesNum);
+            }
+
+            @Override
+            public void flatMap(String line, Collector<Tuple2<String, Integer>> out) throws Exception {
+                String[] words = line.split("\\W+");
+                for (String word : words) {
+                    out.collect(new Tuple2<>(word, 1));
+                }
+
+                // 处理每一行数据后 linesNum 递增
+                linesNum.add(1);
+            }
+        })
+                .groupBy(0)
+                .sum(1)
+                .print();
+
+        //获取累加器结果
+        int linesNum = env.getLastJobExecutionResult().getAccumulatorResult("linesNum");
+        System.out.println(linesNum);*/
     }
 
     static class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
