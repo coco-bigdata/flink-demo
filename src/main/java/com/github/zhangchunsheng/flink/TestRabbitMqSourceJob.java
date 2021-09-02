@@ -1,10 +1,7 @@
 package com.github.zhangchunsheng.flink;
 
 import com.github.zhangchunsheng.flink.utils.ExecutionEnvUtil;
-import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.common.functions.RichFilterFunction;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -121,6 +118,27 @@ public class TestRabbitMqSourceJob {
         env.registerCachedFile("hdfs:///path/to/file", "machineLearningModel");
 
         env.execute();
+
+        //要处理的数据集合
+        /*DataSet<String> lines;
+
+        // Word count 算法
+        lines.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
+            @Override
+            public void flatMap(String line, Collector<Tuple2<String, Integer>> out) throws Exception {
+                String[] words = line.split("\\W+");
+                for (String word : words) {
+                    out.collect(new Tuple2<>(word, 1));
+                }
+            }
+        })
+                .groupBy(0)
+                .sum(1)
+                .print();
+
+        // 计算要处理的文本中的行数
+        long linesCount = lines.count();
+        System.out.println(linesCount);*/
     }
 
     static class FilterGenre implements FilterFunction<Tuple3<Long, String, String>> {
