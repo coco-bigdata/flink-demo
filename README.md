@@ -120,5 +120,8 @@ flink run -c com.github.zhangchunsheng.flink.SocketTextStreamWordCount ~/dev/git
 ~/git/flink-1.10.0/bin/flink run -c com.github.zhangchunsheng.flink.TestDorisSourceJob target/flink-demo-1.0-SNAPSHOT.jar
 ~/git/flink-1.10.0/bin/flink run -c com.github.zhangchunsheng.flink.TestDorisSourceJob target/original-flink-demo-1.0-SNAPSHOT.jar
 
+flink-1.11.2
+~/git/flink-1.11.2/bin/flink run -c com.github.zhangchunsheng.flink.TestDorisSourceJob target/flink-demo-1.0-SNAPSHOT.jar
+
 mvn package
 ```
