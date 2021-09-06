@@ -112,3 +112,9 @@ docker run -d  -p 15672:15672  -p  5672:5672  -e RABBITMQ_DEFAULT_USER=admin -e 
 web.tmpdir: /usr/local/blink-1.5.1/jars
 web.upload.dir: /usr/local/blink-1.5.1/jars
 ```
+
+```
+mvn install:install-file "-DgroupId=org.apache" "-DartifactId=doris-flink" "-Dversion=1.0-SNAPSHOT" "-Dpackaging=jar" "-Dfile=doris-flink-1.0-SNAPSHOT.jar"
+
+flink run -c com.github.zhangchunsheng.flink.SocketTextStreamWordCount ~/dev/github/flink-demo/target/original-flink-demo-1.0-SNAPSHOT.jar 127.0.0.1 9000
+```

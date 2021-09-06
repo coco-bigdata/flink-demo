@@ -14,3 +14,6 @@
 1. add elk demo
 2. add rabbitmq source demo
 3. add rabbitmq sink demo
+
+2021-09-06
+1. add doris demo
