@@ -119,3 +119,78 @@ Caused by: java.util.concurrent.CompletionException: java.util.concurrent.Timeou
         ... 25 more
 Caused by: java.util.concurrent.TimeoutException
         ... 23 more
+
+
+
+2021-09-06 16:16:13
+org.apache.flink.runtime.JobException: Recovery is suppressed by NoRestartBackoffTimeStrategy
+	at org.apache.flink.runtime.executiongraph.failover.flip1.ExecutionFailureHandler.handleFailure(ExecutionFailureHandler.java:110)
+	at org.apache.flink.runtime.executiongraph.failover.flip1.ExecutionFailureHandler.getFailureHandlingResult(ExecutionFailureHandler.java:76)
+	at org.apache.flink.runtime.scheduler.DefaultScheduler.handleTaskFailure(DefaultScheduler.java:192)
+	at org.apache.flink.runtime.scheduler.DefaultScheduler.maybeHandleTaskFailure(DefaultScheduler.java:186)
+	at org.apache.flink.runtime.scheduler.DefaultScheduler.updateTaskExecutionStateInternal(DefaultScheduler.java:180)
+	at org.apache.flink.runtime.scheduler.SchedulerBase.updateTaskExecutionState(SchedulerBase.java:484)
+	at org.apache.flink.runtime.scheduler.UpdateSchedulerNgOnInternalFailuresListener.notifyTaskFailure(UpdateSchedulerNgOnInternalFailuresListener.java:49)
+	at org.apache.flink.runtime.executiongraph.ExecutionGraph.notifySchedulerNgAboutInternalTaskFailure(ExecutionGraph.java:1703)
+	at org.apache.flink.runtime.executiongraph.Execution.processFail(Execution.java:1252)
+	at org.apache.flink.runtime.executiongraph.Execution.processFail(Execution.java:1220)
+	at org.apache.flink.runtime.executiongraph.Execution.markFailed(Execution.java:1051)
+	at org.apache.flink.runtime.executiongraph.ExecutionVertex.markFailed(ExecutionVertex.java:748)
+	at org.apache.flink.runtime.scheduler.DefaultExecutionVertexOperations.markFailed(DefaultExecutionVertexOperations.java:41)
+	at org.apache.flink.runtime.scheduler.DefaultScheduler.handleTaskDeploymentFailure(DefaultScheduler.java:446)
+	at org.apache.flink.runtime.scheduler.DefaultScheduler.lambda$assignResourceOrHandleError$5(DefaultScheduler.java:433)
+	at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:836)
+	at java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:811)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:488)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1990)
+	at org.apache.flink.runtime.jobmaster.slotpool.SchedulerImpl.lambda$internalAllocateSlot$0(SchedulerImpl.java:168)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:774)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:750)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:488)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1990)
+	at org.apache.flink.runtime.jobmaster.slotpool.SlotSharingManager$SingleTaskSlot.release(SlotSharingManager.java:726)
+	at org.apache.flink.runtime.jobmaster.slotpool.SlotSharingManager$MultiTaskSlot.release(SlotSharingManager.java:537)
+	at org.apache.flink.runtime.jobmaster.slotpool.SlotSharingManager$MultiTaskSlot.lambda$new$0(SlotSharingManager.java:432)
+	at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:836)
+	at java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:811)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:488)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1990)
+	at org.apache.flink.runtime.concurrent.FutureUtils.lambda$forward$21(FutureUtils.java:1065)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:774)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:750)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:488)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1990)
+	at org.apache.flink.runtime.concurrent.FutureUtils$Timeout.run(FutureUtils.java:999)
+	at org.apache.flink.runtime.rpc.akka.AkkaRpcActor.handleRunAsync(AkkaRpcActor.java:397)
+	at org.apache.flink.runtime.rpc.akka.AkkaRpcActor.handleRpcMessage(AkkaRpcActor.java:190)
+	at org.apache.flink.runtime.rpc.akka.FencedAkkaRpcActor.handleRpcMessage(FencedAkkaRpcActor.java:74)
+	at org.apache.flink.runtime.rpc.akka.AkkaRpcActor.handleMessage(AkkaRpcActor.java:152)
+	at akka.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:26)
+	at akka.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:21)
+	at scala.PartialFunction$class.applyOrElse(PartialFunction.scala:123)
+	at akka.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:21)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:170)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:171)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:171)
+	at akka.actor.Actor$class.aroundReceive(Actor.scala:517)
+	at akka.actor.AbstractActor.aroundReceive(AbstractActor.scala:225)
+	at akka.actor.ActorCell.receiveMessage(ActorCell.scala:592)
+	at akka.actor.ActorCell.invoke(ActorCell.scala:561)
+	at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:258)
+	at akka.dispatch.Mailbox.run(Mailbox.scala:225)
+	at akka.dispatch.Mailbox.exec(Mailbox.scala:235)
+	at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: org.apache.flink.runtime.jobmanager.scheduler.NoResourceAvailableException: Could not allocate the required slot within slot request timeout. Please make sure that the cluster has enough resources.
+	at org.apache.flink.runtime.scheduler.DefaultScheduler.maybeWrapWithNoResourceAvailableException(DefaultScheduler.java:452)
+	... 45 more
+Caused by: java.util.concurrent.CompletionException: java.util.concurrent.TimeoutException
+	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:292)
+	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:308)
+	at java.util.concurrent.CompletableFuture.uniApply(CompletableFuture.java:607)
+	at java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:591)
+	... 25 more
+Caused by: java.util.concurrent.TimeoutException
+	... 23 more
