@@ -21,5 +21,7 @@ public class TestDorisSourceJob {
         properties.put("table.identifier","camtg.c_original_data_t");
 
         env.addSource(new DorisSourceFunction(new DorisStreamOptions(properties), new SimpleListDeserializationSchema())).print();
+
+        env.execute("Flink add doris source");
     }
 }
