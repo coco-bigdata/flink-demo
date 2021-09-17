@@ -13,3 +13,5 @@
 
 游戏id	时间戳	设备标识	版本		渠道
 id1 1576684800 imei1 version1 channel1
+
+flink mysql
