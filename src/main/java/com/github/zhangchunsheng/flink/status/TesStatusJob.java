@@ -19,7 +19,7 @@ public class TesStatusJob {
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.setParallelism(1);
 
-        SingleOutputStreamOperator dataStream = env.addSource(new ReadLineSource("src/main/resources/data.txt"))
+        SingleOutputStreamOperator<Tuple2<String, Long>> dataStream = env.addSource(new ReadLineSource("src/main/resources/data.txt"))
                 // 注意 FlatMapFunction 不要写成 Lambda 表达式
                 // 我们使用了泛型，所以没有显式地指明返回值的类型的话会出错
                 .flatMap(new FlatMapFunction<String, Tuple2<String, Long>>() {
