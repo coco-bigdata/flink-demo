@@ -28,6 +28,7 @@ class TestStatusJob {
         val env = StreamExecutionEnvironment.getExecutionEnvironment()
         env.streamTimeCharacteristic = TimeCharacteristic.EventTime
         env.parallelism = 1
+
         val dataStream = env.addSource(ReadLineSource("src/main/resources/data.txt"))
         val process: Any = dataStream
             .flatMap(object : FlatMapFunction<String?, Tuple2<String?, Long?>?> {
