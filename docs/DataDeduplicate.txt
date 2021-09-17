@@ -1,0 +1,100 @@
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.ToString;
+import lombok.val;
+import com.aze.producer.ReadLineSource;
+import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.state.StateTtlConfig;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.time.Time;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.TimeCharacteristic;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
+import org.apache.flink.util.Collector;
+
+import java.time.Duration;
+
+/**
+ * @Author: Peter
+ * @Date: 2020-09-16 14:45
+ */
+public class DataDeduplicate {
+
+    public static void main(String[] args) throws Exception {
+        val env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        env.setParallelism(1);
+
+        val dataStream = env.addSource(new ReadLineSource("src/main/resources/data.txt"));
+        val process = dataStream
+                .flatMap(new FlatMapFunction<String, Tuple2<String, Long>>() {
+                    @Override
+                    public void flatMap(String s, Collector<Tuple2<String, Long>> out) throws Exception {
+                        String[] split = s.split(",");
+                        if ("pv".equals(split[3])) {
+                            val res = new Tuple2<>(split[0] + "-" + split[1], Long.parseLong(split[4]));
+                            out.collect(res);
+                        }
+                    }
+                })
+                .assignTimestampsAndWatermarks(WatermarkStrategy
+                        .<Tuple2<String, Long>>forBoundedOutOfOrderness(Duration.ofMillis(1000))
+                        .withTimestampAssigner((SerializableTimestampAssigner<Tuple2<String, Long>>)
+                                (s, l) -> s.f1))
+                .keyBy(s -> s.f0)
+                .process(new KeyedProcessFunction<String, Tuple2<String, Long>, Object>() {
+
+                    private ValueState<UserBehavior> state;
+
+                    @Override
+                    public void open(Configuration parameters) {
+                        val stateDescriptor = new ValueStateDescriptor<>("mystate", UserBehavior.class);
+                        stateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(60)).build());
+                        state = getRuntimeContext().getState(stateDescriptor);
+                    }
+
+                    @Override
+                    public void processElement(Tuple2<String, Long> in,
+                                               Context ctx,
+                                               Collector<Object> out) throws Exception {
+                        UserBehavior cur = state.value();
+                        if (cur == null) {
+                            cur = new UserBehavior(in.f0, in.f1);
+                            state.update(cur);
+                            ctx.timerService().registerEventTimeTimer(cur.getTimestamp() + 60000);
+                            out.collect(cur);
+                        } else {
+                            System.out.println("[Duplicate Data] " + in.f0 + " " + in.f1);
+                        }
+                    }
+
+                    @Override
+                    public void onTimer(long timestamp,
+                                        OnTimerContext ctx,
+                                        Collector<Object> out) throws Exception {
+                        UserBehavior cur = state.value();
+                        if (cur.getTimestamp() + 1000 <= timestamp) {
+                            System.out.printf("[Overdue] now: %d obj_time: %d Date: %s%n",
+                                    timestamp, cur.getTimestamp(), cur.getId());
+                            state.clear();
+                        }
+                    }
+                });
+        process.print();
+        env.execute("flink");
+
+    }
+
+    @Data
+    @ToString
+    @AllArgsConstructor
+    private static class UserBehavior {
+        private String id;
+        private long timestamp;
+    }
+}
