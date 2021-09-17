@@ -103,6 +103,7 @@ public class KafkaKeyedStateSample {
                                 duration = statusDuration.get(collectEmpStatus) + (timestamp - lastTimestamp.value());
                             } else {
                                 //状态变了,上次的状态时长累加
+                                // timestamp statusDuration lastTimestamp equipment package_date status
                                 collectEmpStatus = lastStatus.value();
                                 duration = statusDuration.get(collectEmpStatus) + (timestamp - lastTimestamp.value());
                             }
