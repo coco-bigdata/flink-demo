@@ -2,6 +2,7 @@ package com.github.zhangchunsheng.flink.pomegranate;
 
 import com.github.zhangchunsheng.flink.model.EquipmentWorkTime;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.slf4j.Logger;
@@ -11,7 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
-public class SinkWorkTimeToMySQL extends RichSinkFunction<EquipmentWorkTime> {
+public class SinkWorkTimeToMySQL extends RichSinkFunction<Tuple2<String, EquipmentWorkTime>> {
     private static final Logger logger = LoggerFactory.getLogger(SinkWorkTimeToMySQL.class);
 
     PreparedStatement ps;
@@ -57,12 +58,12 @@ public class SinkWorkTimeToMySQL extends RichSinkFunction<EquipmentWorkTime> {
      * @throws Exception
      */
     @Override
-    public void invoke(EquipmentWorkTime value, Context context) throws Exception {
+    public void invoke(Tuple2<String, EquipmentWorkTime> value, Context context) throws Exception {
         if (ps == null) {
             return;
         }
         //遍历数据集合
-        EquipmentWorkTime equipmentWorkTime = value;
+        EquipmentWorkTime equipmentWorkTime = value.f1;
         //for (Student student : value) {
         ps.setInt(1, equipmentWorkTime.getPackageDate());
         ps.setLong(2, equipmentWorkTime.getStartPackageTime());

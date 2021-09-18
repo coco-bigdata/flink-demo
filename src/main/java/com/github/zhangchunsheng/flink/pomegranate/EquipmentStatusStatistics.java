@@ -1,5 +1,6 @@
 package com.github.zhangchunsheng.flink.pomegranate;
 
+import com.github.zhangchunsheng.flink.model.EquipmentWorkTime;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.flink.api.common.functions.FlatMapFunction;
@@ -26,8 +27,7 @@ import java.util.Properties;
 
 public class EquipmentStatusStatistics {
     private final static Gson gson = new Gson();
-    private final static String SOURCE_TOPIC = "test5";
-    private final static String SINK_TOPIC = "test6";
+    private final static String SOURCE_TOPIC = "c_unpack_data_t_topic";
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public static void main(String[] args) throws Exception {
@@ -37,10 +37,10 @@ public class EquipmentStatusStatistics {
 
         // 2. 定义数据
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
-        props.put("zookeeper.connect", "localhost:2181");
+        props.put("bootstrap.servers", "192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092");
+        props.put("zookeeper.connect", "192.168.0.200:2181,192.168.0.160:2181,192.168.0.178:2181");
         props.put("group.id", "test-read-group-4");
-        props.put("deserializer.encoding", "GB2312");
+        props.put("deserializer.encoding", "utf-8");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("auto.offset.reset", "latest");
@@ -51,7 +51,7 @@ public class EquipmentStatusStatistics {
                 props));
 
         // 3. 处理逻辑
-        DataStream<Tuple2<String, Long>> counts = text.flatMap(new FlatMapFunction<String, Tuple2<String, Map<String, String>>>() {
+        DataStream<Tuple2<String, EquipmentWorkTime>> counts = text.flatMap(new FlatMapFunction<String, Tuple2<String, Map<String, String>>>() {
             @Override
             public void flatMap(String value, Collector<Tuple2<String, Map<String, String>>> out) throws Exception {
                 if (StringUtils.isNullOrWhitespaceOnly(value)) {
@@ -60,13 +60,13 @@ public class EquipmentStatusStatistics {
                 //解析message中的json
                 Map<String, String> map = gson.fromJson(value, new TypeToken<Map<String, String>>() {
                 }.getType());
-                String employee = map.getOrDefault("employee", "");
-                out.collect(new Tuple2<>(employee, map));
+                String equipmentNumber = map.getOrDefault("equipment_number", "");
+                out.collect(new Tuple2<>(equipmentNumber, map));
             }
         })
 
                 .keyBy(value -> value.f0)
-                .flatMap(new RichFlatMapFunction<Tuple2<String, Map<String, String>>, Tuple2<String, Long>>() {
+                .flatMap(new RichFlatMapFunction<Tuple2<String, Map<String, String>>, Tuple2<String, EquipmentWorkTime>>() {
                     //保存最后1次上报状态的时间戳
                     ValueState<Long> lastTimestamp = null;
                     //保存最后1次的状态
@@ -87,9 +87,9 @@ public class EquipmentStatusStatistics {
                     }
 
                     @Override
-                    public void flatMap(Tuple2<String, Map<String, String>> in, Collector<Tuple2<String, Long>> out) throws Exception {
+                    public void flatMap(Tuple2<String, Map<String, String>> in, Collector<Tuple2<String, EquipmentWorkTime>> out) throws Exception {
                         long timestamp = Long.parseLong(in.f1.get("event_timestamp"));
-                        String employee = in.f1.get("employee");
+                        String equipmentNumber = in.f1.get("equipment_number");
                         String empStatus = in.f1.get("status");
                         String collectEmpStatus = empStatus;
                         long duration = 0;
@@ -115,18 +115,17 @@ public class EquipmentStatusStatistics {
                         if (!collectEmpStatus.equalsIgnoreCase(empStatus) && !statusDuration.contains(empStatus)) {
                             statusDuration.put(empStatus, 0L);
                         }
-                        out.collect(new Tuple2<>(employee + ":" + collectEmpStatus, duration));
+                        EquipmentWorkTime equipmentWorkTime = new EquipmentWorkTime();
+                        out.collect(new Tuple2<>(equipmentNumber + ":" + collectEmpStatus, equipmentWorkTime));
                     }
                 })
                 .keyBy(v -> v.f0);
 
         // 4. 打印结果
-        counts.addSink(new FlinkKafkaProducer010<>("localhost:9092", SINK_TOPIC,
-                (SerializationSchema<Tuple2<String, Long>>) element -> ("(" + element.f0 + "," + element.f1 + ")").getBytes()));
-        counts.print();
+        counts.addSink(new SinkWorkTimeToMySQL());
 
         // execute program
-        env.execute("Kafka Streaming KeyedState sample");
+        env.execute("Equipment status statistics");
 
     }
 }
