@@ -118,7 +118,11 @@ public class EquipmentStatusStatistics {
                             return;
                         }
                         EquipmentWorkTime equipmentWorkTime = new EquipmentWorkTime();
-                        equipmentWorkTime.setStartPackageTime(Long.valueOf(lastPackageTime.value()));
+                        if (lastPackageTime == null || lastPackageTime.value() == null) {
+                            equipmentWorkTime.setStartPackageTime(packageTime);
+                        } else {
+                            equipmentWorkTime.setStartPackageTime(Long.valueOf(lastPackageTime.value()));
+                        }
                         equipmentWorkTime.setEndPackageTime(Long.valueOf(packageTime));
                         equipmentWorkTime.setStatusDuration(duration.intValue());
                         equipmentWorkTime.setEquipmentNumber(equipmentNumber);
