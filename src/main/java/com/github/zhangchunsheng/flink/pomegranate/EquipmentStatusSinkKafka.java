@@ -3,6 +3,7 @@ package com.github.zhangchunsheng.flink.pomegranate;
 import com.github.zhangchunsheng.flink.model.EquipmentWorkTime;
 import com.github.zhangchunsheng.flink.model.MetricEvent;
 import com.github.zhangchunsheng.flink.schemas.EquipmentWorkTimeSchema;
+import com.github.zhangchunsheng.flink.schemas.EquipmentWorkTimeSchema1;
 import com.github.zhangchunsheng.flink.schemas.MetricSchema;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -155,12 +156,10 @@ public class EquipmentStatusSinkKafka {
                 .keyBy(v -> v.f0);
 
         // 4. 打印结果
-        counts.addSink(new FlinkKafkaProducer010<>("192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092", SINK_TOPIC,
-                (SerializationSchema<Tuple2<String, EquipmentWorkTime>>) element -> ("(" + element.f0 + "," + element.f1 + ")").getBytes()));
         counts.addSink(new FlinkKafkaProducer010<Tuple2<String, EquipmentWorkTime>>(
                 "192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092", SINK_TOPIC,
-                (SerializationSchema<Tuple2<String, EquipmentWorkTime>>) element -> ("(" + element.f0 + "," + element.f1 + ")").getBytes())
-        );
+                new EquipmentWorkTimeSchema1()
+        ));
         counts.print();
 
         // execute program
