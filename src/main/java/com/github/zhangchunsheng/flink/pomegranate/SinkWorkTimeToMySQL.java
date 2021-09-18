@@ -29,7 +29,7 @@ public class SinkWorkTimeToMySQL extends RichSinkFunction<EquipmentWorkTime> {
         super.open(parameters);
         dataSource = new BasicDataSource();
         connection = getConnection(dataSource);
-        String sql = "insert into c_equipment_work_time_t(package_date, start_package_time, status, equipment_number, " +
+        String sql = "insert into c_equipment_work_time_t1(package_date, start_package_time, status, equipment_number, " +
                 "status_duration, duration_minute, ip, end_package_time, package_no, work_time, " +
                 "standby_time, warning_time, piece_cnt) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         if (connection != null) {
