@@ -83,6 +83,8 @@ public class EquipmentStatusSinkKafka {
                 .flatMap(new RichFlatMapFunction<Tuple2<String, Map<String, String>>, Tuple2<String, EquipmentWorkTime>>() {
                     //保存最后1次上报状态的时间戳
                     ValueState<Long> lastPackageTime = null;
+                    //保存第1次上报状态的时间戳
+                    ValueState<Long> startPackageTime = null;
                     //保存最后1次的状态
                     ValueState<String> lastStatus = null;
                     //记录每个状态的持续时长累加值
@@ -92,6 +94,9 @@ public class EquipmentStatusSinkKafka {
                     public void open(Configuration parameters) throws Exception {
                         ValueStateDescriptor<Long> lastPackageTimeDescriptor = new ValueStateDescriptor<>("lastPackageTime", Long.class);
                         lastPackageTime = getRuntimeContext().getState(lastPackageTimeDescriptor);
+
+                        ValueStateDescriptor<Long> startPackageTimeDescriptor = new ValueStateDescriptor<>("startPackageTime", Long.class);
+                        startPackageTime = getRuntimeContext().getState(startPackageTimeDescriptor);
 
                         ValueStateDescriptor<String> lastStatusDescriptor = new ValueStateDescriptor<>("lastStatus", String.class);
                         lastStatus = getRuntimeContext().getState(lastStatusDescriptor);
@@ -107,6 +112,7 @@ public class EquipmentStatusSinkKafka {
                         String empStatus = in.f1.get("status");
                         String collectEmpStatus = empStatus;
                         Long duration = 0L;
+                        boolean isChanged = false;
                         if (lastPackageTime == null || lastPackageTime.value() == null) {
                             //第1条数据
                             duration = 0L;
@@ -118,16 +124,21 @@ public class EquipmentStatusSinkKafka {
                                 //状态变了,上次的状态时长累加
                                 // packageTime statusDuration lastPackageTime equipment package_date status
                                 collectEmpStatus = lastStatus.value();
+                                isChanged = true;
                                 duration = statusDuration.get(collectEmpStatus) + (packageTime - lastPackageTime.value());
                             }
                         } else {
                             return;
                         }
                         EquipmentWorkTime equipmentWorkTime = new EquipmentWorkTime();
-                        if (lastPackageTime == null || lastPackageTime.value() == null) {
+                        if (startPackageTime == null || startPackageTime.value() == null) {
                             equipmentWorkTime.setStartPackageTime(packageTime);
+                            startPackageTime.update(packageTime);
                         } else {
-                            equipmentWorkTime.setStartPackageTime(Long.valueOf(lastPackageTime.value()));
+                            equipmentWorkTime.setStartPackageTime(Long.valueOf(startPackageTime.value()));
+                        }
+                        if(isChanged) {
+                            startPackageTime.update(packageTime);
                         }
                         equipmentWorkTime.setEndPackageTime(Long.valueOf(packageTime));
                         equipmentWorkTime.setStatusDuration(duration.intValue());
