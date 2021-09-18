@@ -96,7 +96,7 @@ public class EquipmentStatusStatistics {
 
                     @Override
                     public void flatMap(Tuple2<String, Map<String, String>> in, Collector<Tuple2<String, EquipmentWorkTime>> out) throws Exception {
-                        long timestamp = Long.parseLong(in.f1.get("event_timestamp"));
+                        long packageTime = Long.parseLong(in.f1.get("package_time"));
                         String equipmentNumber = in.f1.get("equipment_number");
                         String empStatus = in.f1.get("status");
                         String collectEmpStatus = empStatus;
@@ -104,20 +104,20 @@ public class EquipmentStatusStatistics {
                         if (lastTimestamp == null || lastTimestamp.value() == null) {
                             //第1条数据
                             duration = 0;
-                        } else if (timestamp > lastTimestamp.value()) { //不接受乱序数据
+                        } else if (packageTime > lastTimestamp.value()) { //不接受乱序数据
                             if (empStatus.equalsIgnoreCase(lastStatus.value())) {
                                 //状态没变，时长累加
-                                duration = statusDuration.get(collectEmpStatus) + (timestamp - lastTimestamp.value());
+                                duration = statusDuration.get(collectEmpStatus) + (packageTime - lastTimestamp.value());
                             } else {
                                 //状态变了,上次的状态时长累加
                                 // timestamp statusDuration lastTimestamp equipment package_date status
                                 collectEmpStatus = lastStatus.value();
-                                duration = statusDuration.get(collectEmpStatus) + (timestamp - lastTimestamp.value());
+                                duration = statusDuration.get(collectEmpStatus) + (packageTime - lastTimestamp.value());
                             }
                         } else {
                             return;
                         }
-                        lastTimestamp.update(timestamp);
+                        lastTimestamp.update(packageTime);
                         lastStatus.update(empStatus);
                         statusDuration.put(collectEmpStatus, duration);
                         if (!collectEmpStatus.equalsIgnoreCase(empStatus) && !statusDuration.contains(empStatus)) {
