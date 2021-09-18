@@ -1,10 +1,13 @@
 package com.github.zhangchunsheng.flink.pomegranate;
 
 import com.github.zhangchunsheng.flink.model.EquipmentWorkTime;
+import com.github.zhangchunsheng.flink.model.MetricEvent;
+import com.github.zhangchunsheng.flink.schemas.MetricSchema;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -16,6 +19,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.StringUtils;
 
@@ -26,6 +31,7 @@ import java.util.Properties;
 public class EquipmentStatusSinkKafka {
     private final static Gson gson = new Gson();
     private final static String SOURCE_TOPIC = "c_unpack_data_t_topic";
+    private final static String SINK_TOPIC = "c_equipment_status_topic";
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public static void main(String[] args) throws Exception {
@@ -148,7 +154,9 @@ public class EquipmentStatusSinkKafka {
                 .keyBy(v -> v.f0);
 
         // 4. 打印结果
-        counts.addSink(new SinkWorkTimeToMySQL());
+        counts.addSink(new FlinkKafkaProducer010<>("192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092", SINK_TOPIC,
+                (SerializationSchema<Tuple2<String, EquipmentWorkTime>>) element -> ("(" + element.f0 + "," + element.f1 + ")").getBytes()));
+        counts.print();
 
         // execute program
         env.execute("Equipment status statistics");
