@@ -39,8 +39,16 @@ public class EquipmentStatusStatistics {
         Properties props = new Properties();
         props.put("bootstrap.servers", "192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092");
         props.put("zookeeper.connect", "192.168.0.200:2181,192.168.0.160:2181,192.168.0.178:2181");
-        props.put("group.id", "test-read-group-4");
-        props.put("deserializer.encoding", "utf-8");
+        props.put("group.id", "equipment-status-group-1");
+        // props.put("deserializer.encoding", "utf-8");
+        //props.put("acks", "all");
+        props.put("retries", 0);
+        // 同时设置batch.size和linger.ms,就是哪个条件先满足就都会将消息发送出去
+        // props.put("batch.size", 16384);
+        // props.put("linger.ms", 10);
+        // 一次调用poll()操作时返回的最大记录数，默认值为500
+        props.put("max.poll.records", "10000");
+        // props.put("buffer.memory", 33554432);
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("auto.offset.reset", "latest");
