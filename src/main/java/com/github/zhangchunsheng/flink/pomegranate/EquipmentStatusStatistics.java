@@ -100,10 +100,10 @@ public class EquipmentStatusStatistics {
                         String equipmentNumber = in.f1.get("equipment_number");
                         String empStatus = in.f1.get("status");
                         String collectEmpStatus = empStatus;
-                        long duration = 0;
+                        Long duration = 0L;
                         if (lastPackageTime == null || lastPackageTime.value() == null) {
                             //第1条数据
-                            duration = 0;
+                            duration = 0L;
                         } else if (packageTime > lastPackageTime.value()) { //不接受乱序数据
                             if (empStatus.equalsIgnoreCase(lastStatus.value())) {
                                 //状态没变，时长累加
@@ -117,13 +117,29 @@ public class EquipmentStatusStatistics {
                         } else {
                             return;
                         }
+                        EquipmentWorkTime equipmentWorkTime = new EquipmentWorkTime();
+                        equipmentWorkTime.setStartPackageTime(Long.valueOf(lastPackageTime.value()));
+                        equipmentWorkTime.setEndPackageTime(Long.valueOf(packageTime));
+                        equipmentWorkTime.setStatusDuration(duration.intValue());
+                        equipmentWorkTime.setEquipmentNumber(equipmentNumber);
+                        equipmentWorkTime.setIp(in.f1.get("ip"));
+
+                        double durationMinute = equipmentWorkTime.getStatusDuration() / 60;
+                        equipmentWorkTime.setStatus(Integer.valueOf(collectEmpStatus));
+                        equipmentWorkTime.setDurationMinute(durationMinute);
+                        equipmentWorkTime.setPackageNo(Integer.valueOf(in.f1.get("package_no")));
+                        equipmentWorkTime.setWorkTime(Long.valueOf(in.f1.get("work_time")));
+                        equipmentWorkTime.setStandbyTime(Long.valueOf(in.f1.get("standby_time")));
+
+                        equipmentWorkTime.setWarningTime(Long.valueOf(in.f1.get("warning_time")));
+                        equipmentWorkTime.setPieceCnt(Integer.valueOf(in.f1.get("piece_cnt")));
+
                         lastPackageTime.update(packageTime);
                         lastStatus.update(empStatus);
                         statusDuration.put(collectEmpStatus, duration);
                         if (!collectEmpStatus.equalsIgnoreCase(empStatus) && !statusDuration.contains(empStatus)) {
                             statusDuration.put(empStatus, 0L);
                         }
-                        EquipmentWorkTime equipmentWorkTime = new EquipmentWorkTime();
                         out.collect(new Tuple2<>(equipmentNumber + ":" + collectEmpStatus, equipmentWorkTime));
                     }
                 })

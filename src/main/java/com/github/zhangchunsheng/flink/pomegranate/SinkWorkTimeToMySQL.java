@@ -31,8 +31,8 @@ public class SinkWorkTimeToMySQL extends RichSinkFunction<Tuple2<String, Equipme
         dataSource = new BasicDataSource();
         connection = getConnection(dataSource);
         String sql = "insert into c_equipment_work_time_t1(package_date, start_package_time, status, equipment_number, " +
-                "status_duration, duration_minute, ip, end_package_time, package_no, work_time, " +
-                "standby_time, warning_time, piece_cnt) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                "status_duration, duration_minute, end_package_time, package_no, work_time, " +
+                "standby_time, warning_time, piece_cnt) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         if (connection != null) {
             ps = this.connection.prepareStatement(sql);
         }
@@ -71,13 +71,12 @@ public class SinkWorkTimeToMySQL extends RichSinkFunction<Tuple2<String, Equipme
         ps.setString(4, equipmentWorkTime.getEquipmentNumber());
         ps.setInt(5, equipmentWorkTime.getStatusDuration());
         ps.setDouble(6, equipmentWorkTime.getDurationMinute());
-        ps.setString(7, equipmentWorkTime.getIp());
-        ps.setLong(8, equipmentWorkTime.getEndPackageTime());
-        ps.setInt(9, equipmentWorkTime.getPackageNo());
-        ps.setLong(10, equipmentWorkTime.getWorkTime());
-        ps.setLong(11, equipmentWorkTime.getStandbyTime());
-        ps.setLong(12, equipmentWorkTime.getWarningTime());
-        ps.setInt(13, equipmentWorkTime.getPieceCnt());
+        ps.setLong(7, equipmentWorkTime.getEndPackageTime());
+        ps.setInt(8, equipmentWorkTime.getPackageNo());
+        ps.setLong(9, equipmentWorkTime.getWorkTime());
+        ps.setLong(10, equipmentWorkTime.getStandbyTime());
+        ps.setLong(11, equipmentWorkTime.getWarningTime());
+        ps.setInt(12, equipmentWorkTime.getPieceCnt());
         ps.addBatch();
         //}
         int[] count = ps.executeBatch();//批量后执行
