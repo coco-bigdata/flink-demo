@@ -43,6 +43,17 @@ public class EquipmentWorkTime {
     @SerializedName("piece_cnt")
     private Integer pieceCnt;
 
+    @SerializedName("count")
+    private Integer count;
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
     public Integer getPackageDate() {
         return packageDate;
     }

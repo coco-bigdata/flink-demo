@@ -1,5 +1,6 @@
 package com.github.zhangchunsheng.flink.model;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,21 +12,55 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EquipmentWorkTimeEvent {
     // timestamp statusDuration lastTimestamp
+    @SerializedName("package_date")
     private Integer packageDate;
+
+    @SerializedName("start_package_time")
     private Long startPackageTime;
+
+    @SerializedName("end_package_time")
     private Long endPackageTime;
+
+    @SerializedName("status")
     private Integer status;
+
+    @SerializedName("equipment_number")
     private String equipmentNumber;
 
+    @SerializedName("status_duration")
     private Integer statusDuration;
+
+    @SerializedName("duration_minute")
     private Double durationMinute;
+
+    @SerializedName("ip")
     private String ip;
+
+    @SerializedName("package_no")
     private Integer packageNo;
+
+    @SerializedName("work_time")
     private Long workTime;
 
+    @SerializedName("standby_time")
     private Long standbyTime;
+
+    @SerializedName("warning_time")
     private Long warningTime;
+
+    @SerializedName("piece_cnt")
     private Integer pieceCnt;
+
+    @SerializedName("count")
+    private Integer count;
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
 
     public Integer getPackageDate() {
         return packageDate;

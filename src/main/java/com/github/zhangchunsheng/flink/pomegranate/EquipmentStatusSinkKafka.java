@@ -137,9 +137,12 @@ public class EquipmentStatusSinkKafka {
                         double durationMinute = equipmentWorkTime.getStatusDuration() / 1000 / 60;
                         equipmentWorkTime.setStatus(Integer.valueOf(collectEmpStatus));
                         equipmentWorkTime.setDurationMinute(durationMinute);
+                        equipmentWorkTime.setPackageDate(Integer.valueOf(in.f1.get("package_date")));
                         equipmentWorkTime.setPackageNo(Integer.valueOf(in.f1.get("package_no")));
                         equipmentWorkTime.setWorkTime(Long.valueOf(in.f1.get("work_time")));
                         equipmentWorkTime.setStandbyTime(Long.valueOf(in.f1.get("standby_time")));
+
+                        equipmentWorkTime.setCount(1);
 
                         equipmentWorkTime.setWarningTime(Long.valueOf(in.f1.get("warning_time")));
                         equipmentWorkTime.setPieceCnt(Integer.valueOf(in.f1.get("piece_cnt")));
