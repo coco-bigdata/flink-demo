@@ -122,7 +122,7 @@ flink run -c com.github.zhangchunsheng.flink.SocketTextStreamWordCount ~/dev/git
 flink-1.11.2
 ~/git/flink-1.11.2/bin/flink run -c com.github.zhangchunsheng.flink.TestDorisSourceJob target/flink-demo-1.0-SNAPSHOT.jar
 
-~/git/flink-1.10.0/bin/flink run -c com.github.zhangchunsheng.flink.pomegranate.EquipmentStatusStatistics target/flink-demo-1.0-SNAPSHOT.jar
+~/git/flink-1.10.0/bin/flink run -c com.github.zhangchunsheng.flink.pomegranate.EquipmentStatusSinkMysql target/flink-demo-1.0-SNAPSHOT.jar
 
 mvn package
 ```

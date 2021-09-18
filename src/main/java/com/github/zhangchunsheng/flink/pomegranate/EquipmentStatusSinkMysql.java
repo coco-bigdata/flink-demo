@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Properties;
 
-public class EquipmentStatusStatistics {
+public class EquipmentStatusSinkMysql {
     private final static Gson gson = new Gson();
     private final static String SOURCE_TOPIC = "c_unpack_data_t_topic";
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
