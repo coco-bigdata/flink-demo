@@ -76,7 +76,7 @@ public class EquipmentStatusStatistics {
                 .keyBy(value -> value.f0)
                 .flatMap(new RichFlatMapFunction<Tuple2<String, Map<String, String>>, Tuple2<String, EquipmentWorkTime>>() {
                     //保存最后1次上报状态的时间戳
-                    ValueState<Long> lastTimestamp = null;
+                    ValueState<Long> lastPackageTime = null;
                     //保存最后1次的状态
                     ValueState<String> lastStatus = null;
                     //记录每个状态的持续时长累加值
@@ -84,8 +84,8 @@ public class EquipmentStatusStatistics {
 
                     @Override
                     public void open(Configuration parameters) throws Exception {
-                        ValueStateDescriptor<Long> lastTimestampDescriptor = new ValueStateDescriptor<>("lastTimestamp", Long.class);
-                        lastTimestamp = getRuntimeContext().getState(lastTimestampDescriptor);
+                        ValueStateDescriptor<Long> lastPackageTimeDescriptor = new ValueStateDescriptor<>("lastPackageTime", Long.class);
+                        lastPackageTime = getRuntimeContext().getState(lastPackageTimeDescriptor);
 
                         ValueStateDescriptor<String> lastStatusDescriptor = new ValueStateDescriptor<>("lastStatus", String.class);
                         lastStatus = getRuntimeContext().getState(lastStatusDescriptor);
@@ -101,23 +101,23 @@ public class EquipmentStatusStatistics {
                         String empStatus = in.f1.get("status");
                         String collectEmpStatus = empStatus;
                         long duration = 0;
-                        if (lastTimestamp == null || lastTimestamp.value() == null) {
+                        if (lastPackageTime == null || lastPackageTime.value() == null) {
                             //第1条数据
                             duration = 0;
-                        } else if (packageTime > lastTimestamp.value()) { //不接受乱序数据
+                        } else if (packageTime > lastPackageTime.value()) { //不接受乱序数据
                             if (empStatus.equalsIgnoreCase(lastStatus.value())) {
                                 //状态没变，时长累加
-                                duration = statusDuration.get(collectEmpStatus) + (packageTime - lastTimestamp.value());
+                                duration = statusDuration.get(collectEmpStatus) + (packageTime - lastPackageTime.value());
                             } else {
                                 //状态变了,上次的状态时长累加
-                                // timestamp statusDuration lastTimestamp equipment package_date status
+                                // packageTime statusDuration lastPackageTime equipment package_date status
                                 collectEmpStatus = lastStatus.value();
-                                duration = statusDuration.get(collectEmpStatus) + (packageTime - lastTimestamp.value());
+                                duration = statusDuration.get(collectEmpStatus) + (packageTime - lastPackageTime.value());
                             }
                         } else {
                             return;
                         }
-                        lastTimestamp.update(packageTime);
+                        lastPackageTime.update(packageTime);
                         lastStatus.update(empStatus);
                         statusDuration.put(collectEmpStatus, duration);
                         if (!collectEmpStatus.equalsIgnoreCase(empStatus) && !statusDuration.contains(empStatus)) {
