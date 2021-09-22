@@ -23,6 +23,7 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -178,6 +179,11 @@ public class EquipmentStatusSinkKafka {
                         if(!day.equals(lastPackageDate.value())) { //init data
                             duration = 0L;
                             // all statusDuration
+                            Iterator<Map.Entry<String, Long>> iterator = statusDuration.iterator();
+                            while (iterator.hasNext()) {
+                                Map.Entry<String, Long> entry = iterator.next();
+                                statusDuration.put(entry.getKey(), duration);
+                            }
                             lastPackageDate.update(packageDate);
                         }
 
