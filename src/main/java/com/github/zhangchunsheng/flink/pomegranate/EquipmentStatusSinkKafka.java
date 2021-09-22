@@ -5,6 +5,7 @@ import com.github.zhangchunsheng.flink.model.MetricEvent;
 import com.github.zhangchunsheng.flink.schemas.EquipmentWorkTimeSchema;
 import com.github.zhangchunsheng.flink.schemas.EquipmentWorkTimeSchema1;
 import com.github.zhangchunsheng.flink.schemas.MetricSchema;
+import com.github.zhangchunsheng.flink.utils.DateUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.flink.api.common.functions.FlatMapFunction;
@@ -110,9 +111,16 @@ public class EquipmentStatusSinkKafka {
                         long packageTime = Long.parseLong(in.f1.get("package_time"));
                         String equipmentNumber = in.f1.get("equipment_number");
                         String empStatus = in.f1.get("status");
+                        String packageDate = in.f1.get("package_date");
                         String collectEmpStatus = empStatus;
                         Long duration = 0L;
                         boolean isChanged = false;
+                        String day = DateUtil.getDay();
+
+                        if(!day.equals(packageDate)) { //不接受乱序数据
+                            return;
+                        }
+
                         if (lastPackageTime == null || lastPackageTime.value() == null) {
                             //第1条数据
                             duration = 0L;
