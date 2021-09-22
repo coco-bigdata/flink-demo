@@ -126,6 +126,7 @@ flink-1.11.2
 ~/git/flink-1.10.0/bin/flink run -c com.github.zhangchunsheng.flink.pomegranate.EquipmentStatusSinkKafka target/flink-demo-1.0-SNAPSHOT.jar
 
 bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --group equipment-status-group-1
+bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --group flink_doris_camtg_group_equipment_status1
 
 mvn package
 ```
