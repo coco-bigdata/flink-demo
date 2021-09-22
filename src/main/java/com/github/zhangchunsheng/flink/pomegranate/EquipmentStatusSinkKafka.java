@@ -174,6 +174,7 @@ public class EquipmentStatusSinkKafka {
                 "192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092", SINK_TOPIC,
                 new EquipmentWorkTimeSchema1()
         ));
+        // to mysql
         counts.print();
 
         // execute program
