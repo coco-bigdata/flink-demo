@@ -134,3 +134,9 @@ https://cloud.tencent.com/developer/article/1764048
 
 https://cloud.tencent.com/developer/article/1633494
 ```
+
+```
+kafka 消费慢
+
+FlinkKafkaConsumer011
+```
