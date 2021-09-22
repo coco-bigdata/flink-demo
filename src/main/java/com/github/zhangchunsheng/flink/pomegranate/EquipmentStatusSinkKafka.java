@@ -204,7 +204,7 @@ public class EquipmentStatusSinkKafka {
                 new EquipmentWorkTimeSchema1()
         ));
         // to mysql
-        counts.addSink(new SinkWorkTimeToMySQL());
+        // counts.addSink(new SinkWorkTimeToMySQL());
         // counts.print();
 
         // execute program
