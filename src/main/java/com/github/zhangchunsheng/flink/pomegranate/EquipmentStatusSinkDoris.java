@@ -119,14 +119,14 @@ public class EquipmentStatusSinkDoris {
                         if (lastPackageTime == null || lastPackageTime.value() == null) {
                             equipmentWorkTime.setStartPackageTime(packageTime);
                         } else {
-                            equipmentWorkTime.setStartPackageTime(Long.valueOf(lastPackageTime.value()));
+                            equipmentWorkTime.setStartPackageTime(lastPackageTime.value());
                         }
-                        equipmentWorkTime.setEndPackageTime(Long.valueOf(packageTime));
+                        equipmentWorkTime.setEndPackageTime(packageTime);
                         equipmentWorkTime.setStatusDuration(duration.intValue());
                         equipmentWorkTime.setEquipmentNumber(equipmentNumber);
                         equipmentWorkTime.setIp(in.f1.get("ip"));
 
-                        double durationMinute = equipmentWorkTime.getStatusDuration() / 1000 / 60;
+                        double durationMinute = equipmentWorkTime.getStatusDuration().doubleValue() / 1000 / 60;
                         equipmentWorkTime.setStatus(Integer.valueOf(collectEmpStatus));
                         equipmentWorkTime.setDurationMinute(durationMinute);
                         equipmentWorkTime.setPackageNo(Integer.valueOf(in.f1.get("package_no")));

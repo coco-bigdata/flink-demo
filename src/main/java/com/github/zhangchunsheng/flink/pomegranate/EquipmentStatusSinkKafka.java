@@ -153,17 +153,17 @@ public class EquipmentStatusSinkKafka {
                             equipmentWorkTime.setStartPackageTime(packageTime);
                             startPackageTime.update(packageTime);
                         } else {
-                            equipmentWorkTime.setStartPackageTime(Long.valueOf(startPackageTime.value()));
+                            equipmentWorkTime.setStartPackageTime(startPackageTime.value());
                         }
                         if(isChanged) {
                             startPackageTime.update(packageTime);
                         }
-                        equipmentWorkTime.setEndPackageTime(Long.valueOf(packageTime));
+                        equipmentWorkTime.setEndPackageTime(packageTime);
                         equipmentWorkTime.setStatusDuration(duration.intValue());
                         equipmentWorkTime.setEquipmentNumber(equipmentNumber);
                         equipmentWorkTime.setIp(in.f1.get("ip"));
 
-                        double durationMinute = equipmentWorkTime.getStatusDuration() / 1000 / 60;
+                        double durationMinute = equipmentWorkTime.getStatusDuration().doubleValue() / 1000 / 60;
                         equipmentWorkTime.setStatus(Integer.valueOf(collectEmpStatus));
                         equipmentWorkTime.setDurationMinute(durationMinute);
                         equipmentWorkTime.setPackageDate(Integer.valueOf(lastPackageDate.value()));
