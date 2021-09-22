@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -17,7 +16,6 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.StringUtils;
 
@@ -25,7 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Properties;
 
-public class EquipmentStatusSinkMysql {
+public class EquipmentStatusSinkDoris {
     private final static Gson gson = new Gson();
     private final static String SOURCE_TOPIC = "c_unpack_data_t_topic";
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -150,7 +148,7 @@ public class EquipmentStatusSinkMysql {
                 .keyBy(v -> v.f0);
 
         // 4. 打印结果
-        counts.addSink(new SinkWorkTimeToMySQL());
+        counts.addSink(new SinkWorkTimeToDoris());
 
         // execute program
         env.execute("Equipment status statistics");

@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-public class SinkWorkTimeToMySQL extends RichSinkFunction<Tuple2<String, EquipmentWorkTime>> {
-    private static final Logger logger = LoggerFactory.getLogger(SinkWorkTimeToMySQL.class);
+public class SinkWorkTimeToDoris extends RichSinkFunction<Tuple2<String, EquipmentWorkTime>> {
+    private static final Logger logger = LoggerFactory.getLogger(SinkWorkTimeToDoris.class);
 
     PreparedStatement ps;
     BasicDataSource dataSource;
@@ -29,7 +29,7 @@ public class SinkWorkTimeToMySQL extends RichSinkFunction<Tuple2<String, Equipme
         super.open(parameters);
         dataSource = new BasicDataSource();
         connection = getConnection(dataSource);
-        String sql = "REPLACE into c_equipment_work_time_t2(package_date, start_package_time, status, equipment_number, " +
+        String sql = "insert into c_equipment_work_time_t1(package_date, start_package_time, status, equipment_number, " +
                 "status_duration, duration_minute, end_package_time, package_no, work_time, " +
                 "standby_time, warning_time, piece_cnt) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         if (connection != null) {
@@ -86,7 +86,7 @@ public class SinkWorkTimeToMySQL extends RichSinkFunction<Tuple2<String, Equipme
     private static Connection getConnection(BasicDataSource dataSource) {
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         //注意，替换成自己本地的 mysql 数据库地址和用户名、密码
-        dataSource.setUrl("jdbc:mysql://192.168.0.97:3306/camtg");
+        dataSource.setUrl("jdbc:mysql://192.168.0.186:9030/camtg");
         dataSource.setUsername("root");
         dataSource.setPassword("camtg");
         //设置连接池的一些参数
