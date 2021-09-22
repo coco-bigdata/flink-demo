@@ -137,6 +137,7 @@ https://cloud.tencent.com/developer/article/1633494
 
 ```
 kafka 消费慢
+flink kafka 消费慢
 
 FlinkKafkaConsumer011
 ```
