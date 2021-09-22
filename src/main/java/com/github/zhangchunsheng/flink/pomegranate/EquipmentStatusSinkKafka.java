@@ -1,16 +1,12 @@
 package com.github.zhangchunsheng.flink.pomegranate;
 
 import com.github.zhangchunsheng.flink.model.EquipmentWorkTime;
-import com.github.zhangchunsheng.flink.model.MetricEvent;
-import com.github.zhangchunsheng.flink.schemas.EquipmentWorkTimeSchema;
 import com.github.zhangchunsheng.flink.schemas.EquipmentWorkTimeSchema1;
-import com.github.zhangchunsheng.flink.schemas.MetricSchema;
 import com.github.zhangchunsheng.flink.utils.DateUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -23,7 +19,6 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.StringUtils;
 
@@ -86,6 +81,8 @@ public class EquipmentStatusSinkKafka {
                     ValueState<Long> lastPackageTime = null;
                     //保存第1次上报状态的时间戳
                     ValueState<Long> startPackageTime = null;
+                    //保存最后1次上报状态的日期
+                    ValueState<String> lastPackageDate = null;
                     //保存最后1次的状态
                     ValueState<String> lastStatus = null;
                     //记录每个状态的持续时长累加值
@@ -98,6 +95,9 @@ public class EquipmentStatusSinkKafka {
 
                         ValueStateDescriptor<Long> startPackageTimeDescriptor = new ValueStateDescriptor<>("startPackageTime", Long.class);
                         startPackageTime = getRuntimeContext().getState(startPackageTimeDescriptor);
+
+                        ValueStateDescriptor<String> lastPackageDateDescriptor = new ValueStateDescriptor<>("lastPackageDate", String.class);
+                        lastPackageDate = getRuntimeContext().getState(lastPackageDateDescriptor);
 
                         ValueStateDescriptor<String> lastStatusDescriptor = new ValueStateDescriptor<>("lastStatus", String.class);
                         lastStatus = getRuntimeContext().getState(lastStatusDescriptor);
@@ -120,14 +120,23 @@ public class EquipmentStatusSinkKafka {
                         if(!day.equals(packageDate)) { //不接受乱序数据
                             return;
                         }
+                        if(lastPackageDate == null || lastPackageDate.value() == null) {
+                            lastPackageDate.update(packageDate);
+                        }
 
                         if (lastPackageTime == null || lastPackageTime.value() == null) {
                             //第1条数据
                             duration = 0L;
                         } else if (packageTime > lastPackageTime.value()) { //不接受乱序数据
                             if (empStatus.equalsIgnoreCase(lastStatus.value())) {
-                                //状态没变，时长累加
-                                duration = statusDuration.get(collectEmpStatus) + (packageTime - lastPackageTime.value());
+                                if(!day.equals(lastPackageDate.value())) { //need init data
+                                    collectEmpStatus = lastStatus.value();
+                                    isChanged = true;
+                                    duration = statusDuration.get(collectEmpStatus) + (packageTime - lastPackageTime.value());
+                                } else {
+                                    //状态没变，时长累加
+                                    duration = statusDuration.get(collectEmpStatus) + (packageTime - lastPackageTime.value());
+                                }
                             } else {
                                 //状态变了,上次的状态时长累加
                                 // packageTime statusDuration lastPackageTime equipment package_date status
@@ -156,7 +165,7 @@ public class EquipmentStatusSinkKafka {
                         double durationMinute = equipmentWorkTime.getStatusDuration() / 1000 / 60;
                         equipmentWorkTime.setStatus(Integer.valueOf(collectEmpStatus));
                         equipmentWorkTime.setDurationMinute(durationMinute);
-                        equipmentWorkTime.setPackageDate(Integer.valueOf(in.f1.get("package_date")));
+                        equipmentWorkTime.setPackageDate(Integer.valueOf(lastPackageDate.value()));
                         equipmentWorkTime.setPackageNo(Integer.valueOf(in.f1.get("package_no")));
                         equipmentWorkTime.setWorkTime(Long.valueOf(in.f1.get("work_time")));
                         equipmentWorkTime.setStandbyTime(Long.valueOf(in.f1.get("standby_time")));
@@ -165,6 +174,12 @@ public class EquipmentStatusSinkKafka {
 
                         equipmentWorkTime.setWarningTime(Long.valueOf(in.f1.get("warning_time")));
                         equipmentWorkTime.setPieceCnt(Integer.valueOf(in.f1.get("piece_cnt")));
+
+                        if(!day.equals(lastPackageDate.value())) { //init data
+                            duration = 0L;
+                            // all statusDuration
+                            lastPackageDate.update(packageDate);
+                        }
 
                         lastPackageTime.update(packageTime);
                         lastStatus.update(empStatus);
