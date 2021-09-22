@@ -190,7 +190,10 @@ public class EquipmentStatusSinkKafka {
                         lastPackageTime.update(packageTime);
                         lastStatus.update(empStatus);
                         statusDuration.put(collectEmpStatus, duration);
-                        if (!collectEmpStatus.equalsIgnoreCase(empStatus) && !statusDuration.contains(empStatus)) {
+                        /*if (!collectEmpStatus.equalsIgnoreCase(empStatus) && !statusDuration.contains(empStatus)) {
+                            statusDuration.put(empStatus, 0L);
+                        }*/
+                        if (!collectEmpStatus.equalsIgnoreCase(empStatus)) {
                             statusDuration.put(empStatus, 0L);
                         }
                         out.collect(new Tuple2<>(equipmentNumber + ":" + collectEmpStatus, equipmentWorkTime));
