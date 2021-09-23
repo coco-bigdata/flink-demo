@@ -330,4 +330,14 @@ public class DateUtil {
 
         return df.format(date);
     }
+
+    public static String getTime() {
+        SimpleDateFormat df = null;
+
+        Date date = new Date();
+
+        df = new SimpleDateFormat("yyyy-MM-dd H:i:s");
+
+        return df.format(date);
+    }
 }
