@@ -56,6 +56,8 @@ public class EquipmentStatusSinkKafka {
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("auto.offset.reset", "latest");
 
+        System.out.println("Time: " + DateUtil.getTime());
+
         DataStreamSource<String> text = env.addSource(new FlinkKafkaConsumer011<>(
                 SOURCE_TOPIC,
                 new SimpleStringSchema(),
@@ -211,7 +213,7 @@ public class EquipmentStatusSinkKafka {
         // counts.print();
 
         // execute program
-        env.execute("Equipment status statistics" + DateUtil.getTime());
+        env.execute("Equipment status statistics");
 
     }
 }

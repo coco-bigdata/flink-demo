@@ -7,6 +7,9 @@ public class Test {
         String day = DateUtil.getDay();
         System.out.println(day);
 
+        String time = DateUtil.getTime();
+        System.out.println(time);
+
         Integer duration = 3441;
         double durationMinute = 3441.0 / 1000 / 60;
         durationMinute = duration.doubleValue() / 1000 / 60;

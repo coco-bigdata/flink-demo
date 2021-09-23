@@ -336,7 +336,7 @@ public class DateUtil {
 
         Date date = new Date();
 
-        df = new SimpleDateFormat("yyyy-MM-dd H:i:s");
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return df.format(date);
     }
