@@ -129,9 +129,6 @@ bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --
 bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --group flink_doris_camtg_group_equipment_status1
 
 mvn package
-flink 窗口
-flink watermark
-flink watermark 模拟数据
 ```
 
 ```
@@ -139,6 +136,10 @@ https://cloud.tencent.com/developer/article/1647308
 https://cloud.tencent.com/developer/article/1764048
 
 https://cloud.tencent.com/developer/article/1633494
+flink 窗口
+flink watermark
+flink watermark 模拟数据
+https://cloud.tencent.com/developer/article/1850749
 ```
 
 ```
