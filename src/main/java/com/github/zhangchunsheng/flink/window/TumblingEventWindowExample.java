@@ -15,9 +15,7 @@ import org.apache.flink.util.Collector;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class TumblingEventWindowExample {
     public static void main(String[] args) throws Exception {
