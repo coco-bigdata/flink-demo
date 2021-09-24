@@ -78,6 +78,7 @@ public class TumblingEventWindowExample {
                 System.out.println(now + "\t\t" + value);
             }
         });
+        transformStream.print();
 
         env.execute("TumblingEventWindowExample");
     }
