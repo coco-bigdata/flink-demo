@@ -64,6 +64,7 @@ public class EquipmentStatusSinkKafka {
                 props));
 
         // 3. 处理逻辑
+        // TODO 没有数据，默认关机，5s1次
         DataStream<Tuple2<String, EquipmentWorkTime>> counts = text.flatMap(new FlatMapFunction<String, Tuple2<String, Map<String, String>>>() {
             @Override
             public void flatMap(String value, Collector<Tuple2<String, Map<String, String>>> out) throws Exception {
