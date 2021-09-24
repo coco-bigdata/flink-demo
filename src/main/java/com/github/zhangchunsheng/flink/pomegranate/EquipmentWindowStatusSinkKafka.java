@@ -22,6 +22,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks;
 import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
@@ -90,8 +91,6 @@ public class EquipmentWindowStatusSinkKafka {
         })
 
                 .keyBy(value -> value.f0)
-                // .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-                // .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
                 .flatMap(new RichFlatMapFunction<Tuple2<String, Map<String, String>>, Tuple2<String, EquipmentWorkTime>>() {
                     //保存最后1次上报状态的时间戳
                     ValueState<Long> lastPackageTime = null;
@@ -215,6 +214,8 @@ public class EquipmentWindowStatusSinkKafka {
                     }
                 })
                 .keyBy(v -> v.f0);
+                // .window(TumblingEventTimeWindows.of(Time.seconds(5)))
+                // .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
 
         // 4. 打印结果
         counts.addSink(new FlinkKafkaProducer010<Tuple2<String, EquipmentWorkTime>>(
