@@ -1,5 +1,6 @@
 package com.github.zhangchunsheng.flink.pomegranate;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.zhangchunsheng.flink.model.EquipmentWorkTime;
 import com.github.zhangchunsheng.flink.schemas.EquipmentWorkTimeSchema1;
 import com.github.zhangchunsheng.flink.utils.DateUtil;
@@ -16,15 +17,21 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks;
+import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
+import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 import org.apache.flink.util.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
@@ -220,6 +227,52 @@ public class EquipmentWindowStatusSinkKafka {
 
         // execute program
         env.execute("Equipment status statistics");
+    }
 
+    static void halfHourNonPaid(SingleOutputStreamOperator<JSONObject> outputStream, OutputTag<JSONObject> ordersHalfhourPaid) {
+        outputStream.getSideOutput(ordersHalfhourPaid)
+                .map(value -> {
+                    return new PaidWarn(value.containsKey("really_data"), 1, Long.parseLong(value.getOrDefault("", "").toString())
+                    , value.containsKey("order_id") ? value.getString("order_id") : "");
+                })
+        .assignTimestampsAndWatermarks(new AssignerWithPeriodicWatermarks<PaidWarn>() {
+            long currentTimestamp = Long.MIN_VALUE;
+            final long maxTimeLag = 5000;
+
+            @Nullable
+            @Override
+            public Watermark getCurrentWatermark() {
+                return new Watermark(currentTimestamp == Long.MIN_VALUE ? Long.MIN_VALUE : currentTimestamp - maxTimeLag);
+            }
+
+            @Override
+            public long extractTimestamp(PaidWarn element, long previousElementTimestamp) {
+                long timestamp = element.getPaidCreateTime();
+                currentTimestamp = Math.max(timestamp, currentTimestamp);
+                return timestamp;
+            }
+        })
+        .timeWindowAll(Time.minutes(30))
+        .apply(new AllWindowFunction<PaidWarn, Integer, TimeWindow>() {
+            @Override
+            public void apply(TimeWindow window, Iterable<PaidWarn> values, Collector<Integer> out) throws Exception {
+                int count = 0;
+                for(PaidWarn val : values) {
+                    if(val != null && !val.isFlag()) {
+                        count += 1;
+                    }
+                }
+                // 早上九点到晚上12点
+                int snow = Integer.parseInt(DateUtil.format(window.getEnd(), "HH"));
+                if(snow > 7 && snow < 24 && count == 0) {
+                    System.out.println("start:" + DateUtil.format(window.getStart(), "yyyy-MM-dd HH:mm:ss"));
+                    System.out.println("count == 0");
+                } else {
+                    System.out.println("start:" + DateUtil.format(window.getStart(), "yyyy-MM-dd HH:mm:ss"));
+                    System.out.println("count != 0");
+                }
+                out.collect(count);
+            }
+        });
     }
 }

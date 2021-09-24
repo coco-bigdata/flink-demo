@@ -23,6 +23,14 @@ public class DateUtil {
         return df.format(new Date(time.longValue() * 1000));
     }
 
+    public static String format(Long time, String format) {
+        if (time.equals(0L)) {
+            return "";
+        }
+        SimpleDateFormat df = new SimpleDateFormat(format);
+        return df.format(new Date(time));
+    }
+
     public static int getDateGMT(String dateString) {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US);
         TimeZone tz = TimeZone.getTimeZone("GMT+8");
