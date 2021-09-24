@@ -69,12 +69,13 @@ public class TumblingEventWindowExample {
                         .union(heartbeatSourceStream)
                         .assignTimestampsAndWatermarks((
                                 // 使用自定义WatermarkGenerator
-                                (WatermarkStrategy<Message>) context -> new CustomWatermarkGenerator())
+                                (WatermarkStrategy<Message>) context -> new CustomWatermarkGeneratorWithHeartbeat())
                                 // 标记时间戳字段（kafka等数据源可自动识别，但是自定义类需手动标记时间戳字段）
                                 .withTimestampAssigner((message, recordTimestamp) -> message.timestamp)
-                                // 配置5分钟没有数据输入，则标记为idle
+                                // 配置5s没有数据输入，则标记为idle
                                 .withIdleness(Duration.ofSeconds(5))
                         )
+                        .setParallelism(1)
                         .filter((FilterFunction<Message>) value -> !"heartbeat".equals(value.value));
 
         // 构建窗口，处理数据
