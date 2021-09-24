@@ -1,3 +1,9 @@
+//调用
+dStream
+      .keyBy(_.event_id)
+      .window(TumblingEventTimeWindows.of(Time.hours(1)))
+      .trigger(new CustomTrigger(10, 1 * 60 * 1000L))
+
 import java.text.SimpleDateFormat
 
 import com.meda.utils.DatePattern
