@@ -140,6 +140,7 @@ flink 窗口
 flink watermark
 flink watermark 模拟数据
 https://cloud.tencent.com/developer/article/1850749
+flink window flatmap
 ```
 
 ```
