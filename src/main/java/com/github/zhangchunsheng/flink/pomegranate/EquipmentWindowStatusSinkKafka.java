@@ -235,44 +235,46 @@ public class EquipmentWindowStatusSinkKafka {
                     return new PaidWarn(value.containsKey("really_data"), 1, Long.parseLong(value.getOrDefault("", "").toString())
                     , value.containsKey("order_id") ? value.getString("order_id") : "");
                 })
-        .assignTimestampsAndWatermarks(new AssignerWithPeriodicWatermarks<PaidWarn>() {
-            long currentTimestamp = Long.MIN_VALUE;
-            final long maxTimeLag = 5000;
+                .assignTimestampsAndWatermarks(new AssignerWithPeriodicWatermarks<PaidWarn>() {
+                    long currentTimestamp = Long.MIN_VALUE;
+                    final long maxTimeLag = 5000;
 
-            @Nullable
-            @Override
-            public Watermark getCurrentWatermark() {
-                return new Watermark(currentTimestamp == Long.MIN_VALUE ? Long.MIN_VALUE : currentTimestamp - maxTimeLag);
-            }
-
-            @Override
-            public long extractTimestamp(PaidWarn element, long previousElementTimestamp) {
-                long timestamp = element.getPaidCreateTime();
-                currentTimestamp = Math.max(timestamp, currentTimestamp);
-                return timestamp;
-            }
-        })
-        .timeWindowAll(Time.minutes(30))
-        .apply(new AllWindowFunction<PaidWarn, Integer, TimeWindow>() {
-            @Override
-            public void apply(TimeWindow window, Iterable<PaidWarn> values, Collector<Integer> out) throws Exception {
-                int count = 0;
-                for(PaidWarn val : values) {
-                    if(val != null && !val.isFlag()) {
-                        count += 1;
+                    @Nullable
+                    @Override
+                    public Watermark getCurrentWatermark() {
+                        return new Watermark(currentTimestamp == Long.MIN_VALUE ? Long.MIN_VALUE : currentTimestamp - maxTimeLag);
                     }
-                }
-                // 早上九点到晚上12点
-                int snow = Integer.parseInt(DateUtil.format(window.getEnd(), "HH"));
-                if(snow > 7 && snow < 24 && count == 0) {
-                    System.out.println("start:" + DateUtil.format(window.getStart(), "yyyy-MM-dd HH:mm:ss"));
-                    System.out.println("count == 0");
-                } else {
-                    System.out.println("start:" + DateUtil.format(window.getStart(), "yyyy-MM-dd HH:mm:ss"));
-                    System.out.println("count != 0");
-                }
-                out.collect(count);
-            }
-        });
+
+                    @Override
+                    public long extractTimestamp(PaidWarn element, long previousElementTimestamp) {
+                        long timestamp = element.getPaidCreateTime();
+                        currentTimestamp = Math.max(timestamp, currentTimestamp);
+                        return timestamp;
+                    }
+                })
+                //.keyBy(PaidWarn::getKey)
+                //.process(new PaidWarningProcessFunction(1000 * 60 * 10))
+                .timeWindowAll(Time.minutes(30))
+                .apply(new AllWindowFunction<PaidWarn, Integer, TimeWindow>() {
+                    @Override
+                    public void apply(TimeWindow window, Iterable<PaidWarn> values, Collector<Integer> out) throws Exception {
+                        int count = 0;
+                        for(PaidWarn val : values) {
+                            if(val != null && !val.isFlag()) {
+                                count += 1;
+                            }
+                        }
+                        // 早上九点到晚上12点
+                        int snow = Integer.parseInt(DateUtil.format(window.getEnd(), "HH"));
+                        if(snow > 7 && snow < 24 && count == 0) {
+                            System.out.println("start:" + DateUtil.format(window.getStart(), "yyyy-MM-dd HH:mm:ss"));
+                            System.out.println("count == 0");
+                        } else {
+                            System.out.println("start:" + DateUtil.format(window.getStart(), "yyyy-MM-dd HH:mm:ss"));
+                            System.out.println("count != 0");
+                        }
+                        out.collect(count);
+                    }
+                });
     }
 }
