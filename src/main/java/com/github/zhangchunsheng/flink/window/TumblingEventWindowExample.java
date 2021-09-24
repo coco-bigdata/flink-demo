@@ -45,6 +45,7 @@ public class TumblingEventWindowExample {
                     public void cancel() {
                     }
                 });
+
         // 标记watermark
         DataStream<Message> sourceStreamWithWatermark =
                 sourceStream.assignTimestampsAndWatermarks((
@@ -55,6 +56,7 @@ public class TumblingEventWindowExample {
                         // 配置5s没有数据输入，则标记为idle
                         .withIdleness(Duration.ofSeconds(5))
                 );
+
         // 构建窗口，处理数据
         DataStream<List<Message>> transformStream =
                 sourceStreamWithWatermark
@@ -67,6 +69,7 @@ public class TumblingEventWindowExample {
                                 collector.collect(messages);
                             }
                         });
+
         // sink打印每个窗口的结果
         transformStream.addSink(new SinkFunction<List<Message>>() {
             @Override
@@ -76,6 +79,6 @@ public class TumblingEventWindowExample {
             }
         });
 
-        env.execute();
+        env.execute("TumblingEventWindowExample");
     }
 }
