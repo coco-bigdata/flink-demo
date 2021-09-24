@@ -135,6 +135,9 @@ public class EquipmentWindowStatusSinkKafka {
                         if(!day.equals(packageDate)) { //不接受乱序数据
                             return;
                         }
+                        if(empStatus.equals("-2")) { //不接受乱序数据
+                            return;
+                        }
                         if(lastPackageDate == null || lastPackageDate.value() == null) {
                             lastPackageDate.update(packageDate);
                         }
