@@ -1,6 +1,7 @@
 package com.github.zhangchunsheng.flink.window;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -46,16 +47,35 @@ public class TumblingEventWindowExample {
                     }
                 });
 
+        // 心跳数据源
+        DataStreamSource<Message> heartbeatSourceStream =
+                env.addSource(new SourceFunction<Message>() {
+                    @Override
+                    public void run(SourceContext<Message> sourceContext) throws Exception {
+                        for (int i = 1; i < Integer.MAX_VALUE; i++) { // 每秒发送1条心跳消息
+                            sourceContext.collect(new Message(System.currentTimeMillis(), "heartbeat"));
+                            Thread.sleep(1000);
+                        }
+                    }
+
+                    @Override
+                    public void cancel() {
+                    }
+                });
+
         // 标记watermark
         DataStream<Message> sourceStreamWithWatermark =
-                sourceStream.assignTimestampsAndWatermarks((
-                        // 使用自定义WatermarkGenerator
-                        (WatermarkStrategy<Message>) context -> new CustomWatermarkGenerator())
-                        // 标记时间戳字段（kafka等数据源可自动识别，但是自定义类需手动标记时间戳字段）
-                        .withTimestampAssigner((message, recordTimestamp) -> message.timestamp)
-                        // 配置5s没有数据输入，则标记为idle
-                        .withIdleness(Duration.ofSeconds(5))
-                );
+                sourceStream
+                        .union(heartbeatSourceStream)
+                        .assignTimestampsAndWatermarks((
+                                // 使用自定义WatermarkGenerator
+                                (WatermarkStrategy<Message>) context -> new CustomWatermarkGenerator())
+                                // 标记时间戳字段（kafka等数据源可自动识别，但是自定义类需手动标记时间戳字段）
+                                .withTimestampAssigner((message, recordTimestamp) -> message.timestamp)
+                                // 配置5分钟没有数据输入，则标记为idle
+                                .withIdleness(Duration.ofSeconds(5))
+                        )
+                        .filter((FilterFunction<Message>) value -> !"heartbeat".equals(value.value));
 
         // 构建窗口，处理数据
         DataStream<List<Message>> transformStream =
