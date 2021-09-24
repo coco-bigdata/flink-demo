@@ -131,6 +131,7 @@ bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --
 mvn package
 flink 窗口
 flink watermark
+flink watermark 模拟数据
 ```
 
 ```
