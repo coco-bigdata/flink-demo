@@ -107,6 +107,7 @@ public class FlinkStreamTimeoutDemo {
                 long timeout = factor * defaultTimeout;
                 updateTimer(ctx, timeout);
                 timeoutFactor.update(factor);
+                // make data status=-2
                 out.collect(new Alert(deviceId, "HIGH", "Data Stream Timeout"));
             }
         }
