@@ -20,6 +20,7 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks;
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -88,6 +89,7 @@ public class EquipmentTimeoutStatusSinkKafka {
         })
 
                 .keyBy(value -> value.f0)
+                .process(new EquipmentStatusTimeoutFunction(5 * 1000))
                 .flatMap(new RichFlatMapFunction<Tuple2<String, Map<String, String>>, Tuple2<String, EquipmentWorkTime>>() {
                     //保存最后1次上报状态的时间戳
                     ValueState<Long> lastPackageTime = null;
@@ -130,9 +132,6 @@ public class EquipmentTimeoutStatusSinkKafka {
                         String day = DateUtil.getDay();
 
                         if(!day.equals(packageDate)) { //不接受乱序数据
-                            return;
-                        }
-                        if(empStatus.equals("-2")) { //不接受乱序数据
                             return;
                         }
                         if(lastPackageDate == null || lastPackageDate.value() == null) {

@@ -339,6 +339,16 @@ public class DateUtil {
         return df.format(date);
     }
 
+    public static String getDay(Long time) {
+        SimpleDateFormat df = null;
+
+        Date date = new Date(time);
+
+        df = new SimpleDateFormat("yyyyMMdd");
+
+        return df.format(date);
+    }
+
     public static String getTime() {
         SimpleDateFormat df = null;
 
