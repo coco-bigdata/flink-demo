@@ -14,5 +14,7 @@ public class Test {
         double durationMinute = 3441.0 / 1000 / 60;
         durationMinute = duration.doubleValue() / 1000 / 60;
         System.out.println(durationMinute);
+
+        System.out.println(System.currentTimeMillis());
     }
 }
