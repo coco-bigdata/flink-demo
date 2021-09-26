@@ -1,6 +1,5 @@
 package com.github.zhangchunsheng.flink.window;
 
-import javafx.scene.control.Alert;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.tuple.Tuple;
@@ -11,12 +10,12 @@ import org.apache.flink.util.OutputTag;
 
 import java.awt.*;
 
-class TimeoutFunction extends KeyedProcessFunction<Tuple, Event, Event> {
+class TimeoutFunction1 extends KeyedProcessFunction<Tuple, Event, Event> {
     private final long timeout;
     private transient ValueState<Long> lastTimer;
     private final OutputTag<Alert> sideOutput;
 
-    public TimeoutFunction(long timeout, OutputTag<Alert> sideOutput) {
+    public TimeoutFunction1(long timeout, OutputTag<Alert> sideOutput) {
         this.timeout = timeout;
         this.sideOutput = sideOutput;
     }
@@ -40,7 +39,7 @@ class TimeoutFunction extends KeyedProcessFunction<Tuple, Event, Event> {
     public void onTimer(long ts, OnTimerContext ctx, Collector<Event> out) throws Exception {
         String id = ctx.getCurrentKey().getField(0);
         if (ts == lastTimer.value()) { // timer的时间是否超时时间
-            ctx.output(sideOutput, new Alert(Alert.AlertType.WARNING, id));
+            ctx.output(sideOutput, new Alert(id, "WARNING"));
         }
     }
 }
