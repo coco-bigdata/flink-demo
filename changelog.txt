@@ -29,3 +29,4 @@
 
 2021-09-26
 1. add kafka idle status
+2. add time window
