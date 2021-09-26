@@ -26,7 +26,7 @@ public class FlinkStreamTimeoutDemo {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         Properties properties = new Properties();
-        properties.setProperty("bootstrap.servers", "127.0.0.1:9092");
+        properties.setProperty("bootstrap.servers", "192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092");
         properties.setProperty("group.id", "test");
 
         FlinkKafkaConsumer011<String> myConsumer = new FlinkKafkaConsumer011<>("t-test", new SimpleStringSchema(),
