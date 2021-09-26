@@ -214,8 +214,6 @@ public class EquipmentTimeoutStatusSinkKafka {
                     }
                 })
                 .keyBy(v -> v.f0);
-                // .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-                // .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
 
         // 4. 打印结果
         /*counts.addSink(new FlinkKafkaProducer010<Tuple2<String, EquipmentWorkTime>>(
