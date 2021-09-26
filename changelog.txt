@@ -26,3 +26,6 @@
 
 2021-09-24
 1. add window demo
+
+2021-09-26
+1. add kafka idle status
