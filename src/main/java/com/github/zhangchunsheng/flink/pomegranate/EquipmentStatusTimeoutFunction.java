@@ -64,6 +64,8 @@ public class EquipmentStatusTimeoutFunction extends KeyedProcessFunction<String,
         updateTimer(ctx, defaultTimeout);
         // 有数据进入，还原因子
         timeoutFactor.update(1);
+
+        out.collect(value);
     }
 
     @Override
