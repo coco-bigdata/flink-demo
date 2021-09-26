@@ -80,7 +80,7 @@ public class EquipmentTimeoutStatusSinkKafka {
         })
 
                 .keyBy(value -> value.f0)
-                .process(new EquipmentStatusTimeoutFunction(5 * 1000))
+                .process(new EquipmentStatusTimeoutFunction(5 * 60 * 1000))
                 .keyBy(value ->  value.f0)
                 .flatMap(new RichFlatMapFunction<Tuple2<String, Map<String, String>>, Tuple2<String, EquipmentWorkTime>>() {
                     //保存最后1次上报状态的时间戳
