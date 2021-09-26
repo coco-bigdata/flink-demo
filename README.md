@@ -129,6 +129,7 @@ bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --
 bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --group flink_doris_camtg_group_equipment_status1
 
 ~/git/flink-1.11.2-2.11/bin/flink run -c com.github.zhangchunsheng.flink.window.TumblingEventWindowExample target/flink-demo-1.0-SNAPSHOT.jar
+~/git/flink-1.11.2-2.11/bin/flink run -c com.github.zhangchunsheng.flink.window.FlinkStreamTimeoutDemo target/flink-demo-1.0-SNAPSHOT.jar
 
 mvn package
 ```
