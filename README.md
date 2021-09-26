@@ -131,6 +131,9 @@ bin/kafka-consumer-groups.sh --bootstrap-server 192.168.0.200:9092 --describe --
 ~/git/flink-1.11.2-2.11/bin/flink run -c com.github.zhangchunsheng.flink.window.TumblingEventWindowExample target/flink-demo-1.0-SNAPSHOT.jar
 ~/git/flink-1.11.2-2.11/bin/flink run -c com.github.zhangchunsheng.flink.window.FlinkStreamTimeoutDemo target/flink-demo-1.0-SNAPSHOT.jar
 
+bin/kafka-console-producer.sh --broker-list 192.168.0.200:9092 --topic t-test
+{"deviceId":"1"}
+
 mvn package
 ```
 
