@@ -137,7 +137,7 @@ bin/kafka-console-producer.sh --broker-list 192.168.0.200:9092 --topic t-test
 {"deviceId":"1"}
 
 bin/kafka-console-producer.sh --broker-list 192.168.0.200:9092 --topic c_unpack_data_t_topic1
-{"package_time":1632653142000,"package_date":20210926,"status":1,"equipment_number":"10","ip":"test","package_no":1,"work_time":1,"standby_time":1,"warning_time":1,"piece_cnt":1}
+{"package_time":1632653616000,"package_date":20210926,"status":1,"equipment_number":"10","ip":"test","package_no":1,"work_time":1,"standby_time":1,"warning_time":1,"piece_cnt":1}
 
 mvn package
 ```
