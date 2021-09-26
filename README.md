@@ -146,6 +146,8 @@ flink window flatmap
 flink window
 https://zhuanlan.zhihu.com/p/364009814
 flink watermark keyBy
+flink keyedstream window 没有数据是否触发
+https://blog.csdn.net/ooobenooo/article/details/102630517
 ```
 
 ```
