@@ -118,6 +118,7 @@ public class EquipmentIdleStatusSinkKafka {
                             cUnpackDataT.setPieceCnt(Integer.valueOf(in.f1.get("piece_cnt")));
 
                             out.collect(new Tuple2<>(equipmentNumber + ":" + collectEmpStatus, cUnpackDataT));
+                            Thread.sleep(1000);
                         }
                     }
                 })
