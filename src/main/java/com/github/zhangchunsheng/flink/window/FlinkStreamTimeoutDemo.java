@@ -36,7 +36,7 @@ public class FlinkStreamTimeoutDemo {
         // 业务数据流
 
         DataStream<String> out = stream.keyBy(new DeviceIdSelector())
-                .process(new TimeoutFunction(60 * 1000)).map(new SimpleMapFunction());
+                .process(new TimeoutFunction(5 * 1000)).map(new SimpleMapFunction());
 
         out.print(); // 输出
 
