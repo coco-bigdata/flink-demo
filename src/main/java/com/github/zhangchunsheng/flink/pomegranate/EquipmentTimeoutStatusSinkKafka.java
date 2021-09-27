@@ -30,7 +30,7 @@ import java.util.Properties;
 
 public class EquipmentTimeoutStatusSinkKafka {
     private final static Gson gson = new Gson();
-    private final static String SOURCE_TOPIC = "c_unpack_data_t_topic1";
+    private final static String SOURCE_TOPIC = "c_unpack_data_t_topic";
     private final static String SINK_TOPIC = "c_equipment_status_topic";
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -207,11 +207,11 @@ public class EquipmentTimeoutStatusSinkKafka {
                 .keyBy(v -> v.f0);
 
         // 4. 打印结果
-        /*counts.addSink(new FlinkKafkaProducer010<Tuple2<String, EquipmentWorkTime>>(
+        counts.addSink(new FlinkKafkaProducer010<Tuple2<String, EquipmentWorkTime>>(
                 "192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092", SINK_TOPIC,
                 new EquipmentWorkTimeSchema1()
-        ));*/
-        counts.print();
+        ));
+        // counts.print();
 
         // execute program
         env.execute("Equipment status statistics");
