@@ -210,7 +210,7 @@ public class EquipmentTimeoutStatusSinkKafka {
         counts.addSink(new FlinkKafkaProducer010<Tuple2<String, EquipmentWorkTime>>(
                 "192.168.0.200:9092,192.168.0.160:9092,192.168.0.178:9092", SINK_TOPIC,
                 new EquipmentWorkTimeSchema1()
-        )).setParallelism(4);
+        ));
         // counts.print();
 
         // execute program
