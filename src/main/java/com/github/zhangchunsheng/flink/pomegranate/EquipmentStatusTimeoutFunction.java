@@ -37,6 +37,7 @@ public class EquipmentStatusTimeoutFunction extends KeyedProcessFunction<String,
             long timeout = factor * defaultTimeout;
             updateTimer(ctx, timeout);
             timeoutFactor.update(factor);
+            // alert
             // make data status=-2 status 5s后又上传
             Tuple2<String, Map<String, String>> result = new Tuple2<>();
             result.f0 = equipmentNumber;
