@@ -32,11 +32,13 @@ public class FlinkStreamTimeoutDemo {
         FlinkKafkaConsumer011<String> myConsumer = new FlinkKafkaConsumer011<>("t-test", new SimpleStringSchema(),
                 properties);
 
+        env.setParallelism(1);
+
         DataStream<String> stream = env.addSource(myConsumer);
         // 业务数据流
 
         DataStream<String> out = stream.keyBy(new DeviceIdSelector())
-                .process(new TimeoutFunction(5 * 1000)).map(new SimpleMapFunction()).setParallelism(1);
+                .process(new TimeoutFunction(5 * 1000)).map(new SimpleMapFunction());
 
         out.print(); // 输出
 
