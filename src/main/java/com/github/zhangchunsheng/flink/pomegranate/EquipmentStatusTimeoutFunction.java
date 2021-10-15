@@ -34,6 +34,7 @@ public class EquipmentStatusTimeoutFunction extends KeyedProcessFunction<String,
         if (timestamp == lastTimer.value()) {
             // 增加告警延迟，如果没有持续数据，递增
             Integer factor = timeoutFactor.value() + 1;
+            //long timeout = factor * defaultTimeout;
             long timeout = factor * defaultTimeout;
             updateTimer(ctx, timeout);
             timeoutFactor.update(factor);
