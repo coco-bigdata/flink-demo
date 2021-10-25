@@ -17,18 +17,18 @@ public class Test {
     private static final Logger logger = LoggerFactory.getLogger(Test.class);
 
     public static void main(String[] args) throws Exception {
-        logger.info("Starting the JobListener Example Code");
+        System.out.println("Starting the JobListener Example Code");
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         String outPut = File.createTempFile("test", "txt").getParent();
-        logger.info("Output will be store at folder {}", outPut);
+        System.out.println("Output will be store at folder " + outPut);
 
         List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
         env.fromCollection(integers)
                 .map(x -> x * 2) // multiply numbers by 2
                 .writeAsText(outPut + "/flink-job-listener-" + UUID.randomUUID());
 
-        logger.info("Registering the JobListener");
+        System.out.println("Registering the JobListener");
         env.registerJobListener(new JobListener() {
             @Override
             public void onJobSubmitted(@Nullable JobClient jobClient, @Nullable Throwable throwable) {
@@ -36,7 +36,7 @@ public class Test {
                     logger.error("Job failed to submit", throwable);
                     return;
                 }
-                logger.info("Job submitted successfully");
+                System.out.println("Job submitted successfully");
                 // do something
                 // push notification
                 // or Call an API
@@ -49,7 +49,7 @@ public class Test {
                     logger.error("Job failed to finish ", throwable);
                     return;
                 }
-                logger.info("Job completed successfully");
+                System.out.println("Job completed successfully");
                 // do something
                 // push notification
                 // or Call an API
