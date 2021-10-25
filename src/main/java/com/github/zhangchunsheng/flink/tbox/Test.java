@@ -26,7 +26,7 @@ public class Test {
 
         List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
         env.fromCollection(integers)
-                .map(x -> x * 2) // multiply numbers by 2
+                .map(x -> x * 20000000000000L) // multiply numbers by 2
                 .writeAsText(outPut + "/flink-job-listener-" + UUID.randomUUID());
 
         // env.fromElements(1, 2, 3, 4, 5).output(new DiscardingOutputFormat<>());
