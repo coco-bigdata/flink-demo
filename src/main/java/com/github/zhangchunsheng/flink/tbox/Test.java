@@ -36,7 +36,8 @@ public class Test {
             @Override
             public void onJobSubmitted(@Nullable JobClient jobClient, @Nullable Throwable throwable) {
                 if (throwable != null) {
-                    logger.error("Job failed to submit", throwable);
+                    System.out.println("Job failed to submit");
+                    throwable.printStackTrace();
                     return;
                 }
                 System.out.println("Job submitted successfully");
@@ -49,7 +50,8 @@ public class Test {
             @Override
             public void onJobExecuted(@Nullable JobExecutionResult jobExecutionResult, @Nullable Throwable throwable) {
                 if (throwable != null) {
-                    logger.error("Job failed to finish ", throwable);
+                    System.out.println("Job failed to finish ");
+                    throwable.printStackTrace();
                     return;
                 }
                 System.out.println("Job completed successfully");
