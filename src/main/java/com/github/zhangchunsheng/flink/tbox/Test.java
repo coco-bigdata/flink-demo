@@ -20,7 +20,7 @@ public class Test {
         logger.info("Starting the JobListener Example Code");
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        String outPut = File.createTempFile("1", "2").getParent();
+        String outPut = File.createTempFile("test", "txt").getParent();
         logger.info("Output will be store at folder {}", outPut);
 
         List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
