@@ -29,7 +29,7 @@ public class Test {
                 .map(x -> x * 2) // multiply numbers by 2
                 .writeAsText(outPut + "/flink-job-listener-" + UUID.randomUUID());
 
-        env.fromElements(1, 2, 3, 4, 5).output(new DiscardingOutputFormat<>());
+        // env.fromElements(1, 2, 3, 4, 5).output(new DiscardingOutputFormat<>());
 
         System.out.println("Registering the JobListener");
         env.registerJobListener(new JobListener() {
