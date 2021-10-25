@@ -2,6 +2,7 @@ package com.github.zhangchunsheng.flink.tbox;
 
 import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.io.DiscardingOutputFormat;
 import org.apache.flink.core.execution.JobClient;
 import org.apache.flink.core.execution.JobListener;
 import org.slf4j.Logger;
@@ -23,10 +24,7 @@ public class Test {
         String outPut = File.createTempFile("test", "txt").getParent();
         System.out.println("Output will be store at folder " + outPut);
 
-        List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-        env.fromCollection(integers)
-                .map(x -> x * 2) // multiply numbers by 2
-                .writeAsText(outPut + "/flink-job-listener-" + UUID.randomUUID());
+        env.fromElements(1, 2, 3, 4, 5).output(new DiscardingOutputFormat<>());
 
         System.out.println("Registering the JobListener");
         env.registerJobListener(new JobListener() {
